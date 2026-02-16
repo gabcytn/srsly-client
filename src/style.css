@@ -1,6 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 @import 'tailwindcss';
+@import 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
+
+:root {
+  --background-main: #fafaf8;
+  --background-main-inverse: var(--p-zinc-900);
+  --light-text: var(--p-zinc-600);
+}
+
+:root[class='app-dark'] {
+  --background-main: var(--p-zinc-900);
+  --background-main-inverse: #fafaf8;
+  --light-text: var(--p-zinc-300);
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 * {
   font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  background-color: var(--background-main);
+}
+
+.font-jetbrains-mono {
+  font-family: 'JetBrains Mono', sans-serif;
+}
+
+.font-cormorant-garamond {
+  font-family: 'Cormorant Garamond', sans-serif;
+}
+
+.text-light {
+  color: var(--light-text);
+}
+
+.bg-primary {
+  background-color: var(--p-primary-color);
+}
+
+.container {
+  max-width: 1200px;
+  width: 90%;
+  margin: 0 auto;
 }
