@@ -1,19 +1,19 @@
 <script setup lang="ts">
 const approachLeft = [
-  'Tracks solved problems',
-  'Evaluates recall quality',
-  'Dynamically adjusts review intervals',
-  'Encourages deliberate re-attempts',
-  'Reduces redundant problem grinding',
-]
+  "Tracks solved problems",
+  "Evaluates recall quality",
+  "Dynamically adjusts review intervals",
+  "Encourages deliberate re-attempts",
+  "Reduces redundant problem grinding",
+];
 
 const approachRight = [
   "Anki's SM-2 spaced repetition",
-  'Long-term learning principles from cognitive science',
-  'Pattern recognition over time',
-  'Active recall techniques',
-  'Forgetting curve research',
-]
+  "Long-term learning principles from cognitive science",
+  "Pattern recognition over time",
+  "Active recall techniques",
+  "Forgetting curve research",
+];
 </script>
 
 <template>

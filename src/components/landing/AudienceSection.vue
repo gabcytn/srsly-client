@@ -1,21 +1,21 @@
 <script setup lang="ts">
 const audienceCards = [
   {
-    title: 'Long-term Prep',
+    title: "Long-term Prep",
     description:
-      'Preparing for technical interviews over months, not weeks. You want to build lasting knowledge, not cram and forget.',
+      "Preparing for technical interviews over months, not weeks. You want to build lasting knowledge, not cram and forget.",
   },
   {
-    title: 'Pattern Retention',
+    title: "Pattern Retention",
     description:
-      'Engineers who value understanding problem patterns and being able to recognize them months later, not just solving them once.',
+      "Engineers who value understanding problem patterns and being able to recognize them months later, not just solving them once.",
   },
   {
-    title: 'Structured Learning',
+    title: "Structured Learning",
     description:
-      'Learners who prefer systematic review over random grinding. You believe in deliberate practice and evidence-based study methods.',
+      "Learners who prefer systematic review over random grinding. You believe in deliberate practice and evidence-based study methods.",
   },
-]
+];
 </script>
 
 <template>
