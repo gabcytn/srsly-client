@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
-@import 'tailwindcss';
-@import 'tailwindcss-primeui';
-@import 'primeicons/primeicons.css';
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
 
 :root {
   --background-main: #fafaf8;
@@ -9,7 +9,7 @@
   --light-text: var(--p-zinc-600);
 }
 
-:root[class='app-dark'] {
+:root[class="app-dark"] {
   --background-main: var(--p-zinc-900);
   --background-main-inverse: #fafaf8;
   --light-text: var(--p-zinc-300);
@@ -20,7 +20,7 @@ html {
 }
 
 * {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 body {
@@ -28,11 +28,11 @@ body {
 }
 
 .font-jetbrains-mono {
-  font-family: 'JetBrains Mono', sans-serif;
+  font-family: "JetBrains Mono", sans-serif;
 }
 
 .font-cormorant-garamond {
-  font-family: 'Cormorant Garamond', sans-serif;
+  font-family: "Cormorant Garamond", sans-serif;
 }
 
 .text-light {
@@ -47,4 +47,17 @@ body {
   max-width: 1200px;
   width: 90%;
   margin: 0 auto;
+}
+
+.p-toast-message-icon {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.p-toast-summary {
+  font-size: 0.9rem !important;
+}
+
+.p-toast-detail {
+  font-size: 0.785rem !important;
 }
