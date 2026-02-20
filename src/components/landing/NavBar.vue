@@ -1,24 +1,24 @@
 <script lang="ts" setup>
-import type { MenuItem } from 'primevue/menuitem'
+import type { MenuItem } from "primevue/menuitem";
 
 const items: MenuItem[] = [
   {
-    label: 'Features',
-    url: '#features',
+    label: "Features",
+    url: "#features",
   },
   {
-    label: 'How It Works',
-    url: '#approach',
+    label: "How It Works",
+    url: "#approach",
   },
   {
-    label: 'For You',
-    url: '#audience',
+    label: "For You",
+    url: "#audience",
   },
   {
-    label: 'Sign In',
-    url: '/auth/login',
+    label: "Sign In",
+    url: "/auth/login",
   },
-]
+];
 </script>
 
 <template>

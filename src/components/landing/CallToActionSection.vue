@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 function handleGetStarted() {
-  console.log('Get Started clicked')
+  console.log("Get Started clicked");
 }
 </script>
 
 <template>
-  <section class="bg-[#d4461f] text-white py-32 px-12 text-center">
+  <section class="bg-primary text-white py-32 px-12 text-center">
     <h2 class="font-cormorant font-bold mb-8 title">Ready to stop forgetting?</h2>
     <p class="text-xl mb-12 opacity-95">Start building durable knowledge today.</p>
     <Button label="Get Started" class="btn-cta" @click="handleGetStarted" />

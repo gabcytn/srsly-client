@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import FeatureCard from './FeatureCard.vue'
+import FeatureCard from "./FeatureCard.vue";
 
 const features = [
   {
-    number: '01',
-    title: 'SM-2 Inspired Scheduling',
+    number: "01",
+    title: "SM-2 Inspired Scheduling",
     description:
-      'Using the same algorithm that powers Anki, srsly intelligently schedules reviews based on your performance and recall quality.',
+      "Using the same algorithm that powers Anki, srsly intelligently schedules reviews based on your performance and recall quality.",
   },
   {
-    number: '02',
-    title: 'Adaptive Intervals',
+    number: "02",
+    title: "Adaptive Intervals",
     description:
-      'Review intervals dynamically adjust based on how well you remember each problem. Struggle? See it sooner. Ace it? Longer gaps.',
+      "Review intervals dynamically adjust based on how well you remember each problem. Struggle? See it sooner. Ace it? Longer gaps.",
   },
   {
-    number: '03',
-    title: 'Late Review Rewards',
+    number: "03",
+    title: "Late Review Rewards",
     description:
-      'Cramming works. The system rewards late reviews. Remembering after the scheduled date proves real retention — and we reward that.',
+      "Cramming works. The system rewards late reviews. Remembering after the scheduled date proves real retention — and we reward that.",
   },
   {
-    number: '04',
-    title: 'AI-Powered Critiques',
+    number: "04",
+    title: "AI-Powered Critiques",
     description:
-      'Get intelligent feedback on your solutions. Understand not just what works, but why, and how to improve your approach.',
+      "Get intelligent feedback on your solutions. Understand not just what works, but why, and how to improve your approach.",
   },
   {
-    number: '05',
-    title: 'Pattern Recognition',
+    number: "05",
+    title: "Pattern Recognition",
     description:
-      'Track your progress across problem categories and data structures. Identify weak areas and watch your pattern recognition improve over time.',
+      "Track your progress across problem categories and data structures. Identify weak areas and watch your pattern recognition improve over time.",
   },
   {
-    number: '06',
-    title: 'Complete History',
+    number: "06",
+    title: "Complete History",
     description:
       "Every attempt, every review, every insight preserved. See your learning journey and celebrate how far you've come.",
   },
-]
+];
 </script>
 
 <template>
