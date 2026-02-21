@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap");
 @import "tailwindcss";
 @import "tailwindcss-primeui";
+@custom-variant dark (&:where(.app-dark, .app-dark *));
 @import "primeicons/primeicons.css";
 
 :root {
