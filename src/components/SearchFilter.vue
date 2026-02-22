@@ -1,11 +1,9 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   label: string;
   selected: boolean;
 }>();
 defineEmits(["click"]);
-console.log(`filter: ${props.label}`);
-console.log(`selected: ${props.selected}`);
 </script>
 <template>
   <div
