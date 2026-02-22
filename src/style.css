@@ -44,6 +44,10 @@ body {
   background-color: var(--p-primary-color);
 }
 
+.bg-mycard {
+  background-color: var(--p-content-card-background) !important;
+}
+
 .container {
   max-width: 1200px;
   width: 90%;
