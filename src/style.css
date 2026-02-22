@@ -8,6 +8,12 @@
   --background-main: #fafaf8;
   --background-main-inverse: var(--p-zinc-900);
   --light-text: var(--p-zinc-600);
+  --easy: #22c55e;
+  --easy-bg: rgba(34, 197, 94, 0.12);
+  --medium: #f59e0b;
+  --medium-bg: rgba(245, 158, 11, 0.12);
+  --hard: #ef4444;
+  --hard-bg: rgba(239, 68, 68, 0.12);
 }
 
 :root[class="app-dark"] {
@@ -34,6 +40,30 @@ body {
 
 .font-cormorant-garamond {
   font-family: "Cormorant Garamond", sans-serif;
+}
+
+.bg-easy {
+  background-color: var(--easy-bg);
+}
+
+.bg-medium {
+  background-color: var(--medium-bg);
+}
+
+.bg-hard {
+  background-color: var(--hard-bg);
+}
+
+.text-easy {
+  color: var(--easy);
+}
+
+.text-medium {
+  color: var(--medium);
+}
+
+.text-hard {
+  color: var(--hard);
 }
 
 .text-light {

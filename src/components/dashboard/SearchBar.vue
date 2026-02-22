@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import SearchFilter from "./SearchFilter.vue";
 
 const activeFilter = ref("All");
 const filters = ["All", "Easy", "Medium", "Hard"];
