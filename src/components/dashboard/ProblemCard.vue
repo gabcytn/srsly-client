@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Problem } from "@/shared/types";
 import getMonthAndDate from "@/utils/get-month-and-date";
+import isBefore from "@/utils/is-before";
 import type { MenuItem } from "primevue/menuitem";
 import { ref } from "vue";
 
@@ -64,9 +65,11 @@ function toggle(event: Event) {
       :class="`text-${problem.difficulty.toLowerCase()} bg-${problem.difficulty.toLowerCase()}`"
       >{{ problem.difficulty === "Medium" ? "Med." : problem.difficulty }}</span
     >
-    <span class="hidden sm:inline text-xs text-light text-right">{{
-      getMonthAndDate(reviewDate)
-    }}</span>
+    <span
+      class="hidden sm:inline text-xs text-light text-right"
+      :class="{ 'text-red-500! dark:text-red-400!': isBefore(new Date(reviewDate)) }"
+      >{{ getMonthAndDate(reviewDate) }}</span
+    >
     <div class="flex items-center gap-1">
       <Button label="Review" size="small" @click="$emit('clickReview', problem)" />
       <div class="flex justify-center">
