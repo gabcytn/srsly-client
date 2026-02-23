@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { paginatedSrsProblem } from "@/shared/sample-api-response";
-import type { Problem } from "@/shared/types";
+import type { PaginatedSrsProblem, Problem } from "@/shared/types";
 import { computed, ref, watch } from "vue";
 
 const completed = ref(3);
 const reviews = ref(7);
 
-const paginatedReviewProblems = ref(paginatedSrsProblem);
+const paginatedReviewProblems = ref<PaginatedSrsProblem>(paginatedSrsProblem);
 const reviewProblems = computed(() => paginatedReviewProblems.value.content);
 
 const first = ref(0);
@@ -42,6 +42,9 @@ function clickReview(problem: Problem) {
       :review-date="reviewProblem.nextAttemptAt"
       @click-review="clickReview"
     />
+    <p v-if="reviewProblems.length === 0" class="text-center text-sm text-light">
+      No problems to review today
+    </p>
     <div class="flex justify-end">
       <Paginator
         :template="{
