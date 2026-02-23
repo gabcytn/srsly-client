@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { paginatedSrsProblem } from "@/shared/sample-api-response";
+import type { Problem } from "@/shared/types";
 import { computed, ref, watch } from "vue";
 
 const completed = ref(3);
@@ -16,6 +17,14 @@ watch(first, (newVal) => {
 });
 // const elementsPerRow = computed(() => paginatedReviewProblems.value.size)
 // const totalElements = computed(() => paginatedReviewProblems.value.totalElements)
+
+const showReviewDialog = ref(false);
+const selectedProblem = ref<Problem | null>(null);
+
+function clickReview(problem: Problem) {
+  showReviewDialog.value = true;
+  selectedProblem.value = problem;
+}
 </script>
 
 <template>
@@ -25,11 +34,13 @@ watch(first, (newVal) => {
     <SearchBar />
   </div>
   <div class="mt-5 space-y-2">
+    <ReviewDialog v-model:is-open="showReviewDialog" :problem="selectedProblem" />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
       :key="reviewProblem.problem.questionFrontendId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
+      @click-review="clickReview"
     />
     <div class="flex justify-end">
       <Paginator

@@ -9,6 +9,8 @@ const props = defineProps<{
   reviewDate: string;
 }>();
 
+defineEmits(["clickReview"]);
+
 const menu = ref();
 const menuPopoverItems: MenuItem[] = [
   {
@@ -66,7 +68,7 @@ function toggle(event: Event) {
       getMonthAndDate(reviewDate)
     }}</span>
     <div class="flex items-center gap-1">
-      <Button label="Review" size="small" />
+      <Button label="Review" size="small" @click="$emit('clickReview', problem)" />
       <div class="flex justify-center">
         <Button
           type="button"
