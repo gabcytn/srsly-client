@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { paginatedSrsProblem } from "@/shared/sample-api-response";
 import { computed, ref, watch } from "vue";
-import TodaysProgress from "./TodaysProgress.vue";
 
 const completed = ref(3);
 const reviews = ref(7);

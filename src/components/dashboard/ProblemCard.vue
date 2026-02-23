@@ -41,7 +41,10 @@ function toggle(event: Event) {
       >#{{ problem.questionFrontendId }}</span
     >
     <div class="shrink grow">
-      <div class="font-bold sm:text-md text-sm overflow-hidden text-ellipsis problem-title">
+      <div
+        class="font-bold sm:text-md text-sm overflow-hidden text-ellipsis problem-title"
+        :title="problem.title"
+      >
         {{ problem.title }}
       </div>
       <div class="hidden sm:flex flex-wrap gap-1.25 mt-1">
@@ -55,11 +58,11 @@ function toggle(event: Event) {
       </div>
     </div>
     <span
-      class="sm:text-sm text-xs font-bold py-0.75 px-2.25 rounded"
+      class="text-xs font-bold py-0.75 px-2.25 rounded"
       :class="`text-${problem.difficulty.toLowerCase()} bg-${problem.difficulty.toLowerCase()}`"
       >{{ problem.difficulty === "Medium" ? "Med." : problem.difficulty }}</span
     >
-    <span class="hidden sm:inline text-sm text-light text-right">{{
+    <span class="hidden sm:inline text-xs text-light text-right">{{
       getMonthAndDate(reviewDate)
     }}</span>
     <div class="flex items-center gap-1">
