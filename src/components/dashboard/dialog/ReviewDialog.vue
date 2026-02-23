@@ -15,7 +15,7 @@ const keys = ["0-2", "3", "4", "5"];
 const selectedGrade = ref<number | null>(null);
 
 function getGradeEquivalentIdx() {
-  if (!selectedGrade.value) {
+  if (selectedGrade.value === null) {
     return -1;
   }
   if (selectedGrade.value <= 2) {
@@ -82,12 +82,12 @@ async function requestSim() {
         v-for="(option, idx) in options"
         :key="idx"
         class="flex items-center gap-1 transition-opacity duration-100"
-        :class="{ 'opacity-50': !selectedGrade || idx !== getGradeEquivalentIdx() }"
+        :class="{ 'opacity-50': selectedGrade === null || idx !== getGradeEquivalentIdx() }"
       >
         <span class="text-xs w-8">{{ keys[idx] }}</span>
         <span
           :class="{
-            'opacity-0': !selectedGrade || idx !== getGradeEquivalentIdx(),
+            'opacity-0': selectedGrade === null || idx !== getGradeEquivalentIdx(),
           }"
           class="w-0.75 h-0.75 rounded-full bg-primary me-1"
         ></span>
