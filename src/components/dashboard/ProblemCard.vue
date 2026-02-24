@@ -7,7 +7,8 @@ import { ref } from "vue";
 
 const props = defineProps<{
   problem: Problem;
-  reviewDate: string;
+  reviewDate?: string | null;
+  buttonLabel?: string | null;
 }>();
 
 defineEmits(["clickReview"]);
@@ -66,12 +67,18 @@ function toggle(event: Event) {
       >{{ problem.difficulty === "Medium" ? "Med." : problem.difficulty }}</span
     >
     <span
+      v-if="reviewDate"
       class="hidden sm:inline text-xs text-light text-right"
       :class="{ 'text-red-500! dark:text-red-400!': isBefore(new Date(reviewDate)) }"
       >{{ getMonthAndDate(reviewDate) }}</span
     >
     <div class="flex items-center gap-1">
-      <Button label="Review" size="small" @click="$emit('clickReview', problem)" />
+      <Button
+        v-if="buttonLabel"
+        :label="buttonLabel"
+        size="small"
+        @click="$emit('clickReview', problem)"
+      />
       <div class="flex justify-center">
         <Button
           type="button"

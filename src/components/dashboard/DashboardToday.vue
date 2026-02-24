@@ -40,6 +40,7 @@ function clickReview(problem: Problem) {
       :key="reviewProblem.problem.questionFrontendId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
+      button-label="Review"
       @click-review="clickReview"
     />
     <p v-if="reviewProblems.length === 0" class="text-center text-sm text-light">
