@@ -4,6 +4,8 @@ import getMonthAndDate from "@/utils/get-month-and-date";
 import isBefore from "@/utils/is-before";
 import type { MenuItem } from "primevue/menuitem";
 import { ref } from "vue";
+import DifficultyTag from "../DifficultyTag.vue";
+import ProblemTag from "../ProblemTag.vue";
 
 const props = defineProps<{
   problem: Problem;
@@ -52,20 +54,15 @@ function toggle(event: Event) {
         {{ problem.title }}
       </div>
       <div class="hidden sm:flex flex-wrap gap-1.25 mt-1">
-        <span
+        <ProblemTag
           v-for="(tag, idx) in problem.topicTags"
           :key="idx"
+          :label="tag.name"
           class="text-xs px-1.75 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded border border-surface"
-        >
-          {{ tag.name }}</span
-        >
+        />
       </div>
     </div>
-    <span
-      class="text-xs font-bold py-0.75 px-2.25 rounded"
-      :class="`text-${problem.difficulty.toLowerCase()} bg-${problem.difficulty.toLowerCase()}`"
-      >{{ problem.difficulty === "Medium" ? "Med." : problem.difficulty }}</span
-    >
+    <DifficultyTag :label="problem.difficulty" />
     <span
       v-if="reviewDate"
       class="hidden sm:inline text-xs text-light text-right"
