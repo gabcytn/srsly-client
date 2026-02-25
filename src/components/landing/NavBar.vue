@@ -25,7 +25,9 @@ const items: MenuItem[] = [
   <header class="max-w-300 mx-auto w-full">
     <Menubar :model="items" class="mb-4">
       <template #start>
-        <router-link to="/" class="font-jetbrains-mono font-bold text-xl py-5">srsly</router-link>
+        <router-link to="/" class="font-jetbrains-mono font-bold text-xl py-5"
+          ><span class="text-primary font-jetbrains-mono">srs</span>ly</router-link
+        >
       </template>
       <template #item="{ item, props }">
         <a v-ripple class="flex items-center" v-bind="props.action" :href="item.url">

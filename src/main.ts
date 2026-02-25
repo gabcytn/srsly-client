@@ -30,6 +30,12 @@ const CustomizedAura = definePreset(Aura, {
       light: {
         content: {
           background: "#FAFAF8",
+          cardBackground: "#FEFEFE",
+        },
+      },
+      dark: {
+        content: {
+          cardBackground: "#18181B",
         },
       },
     },

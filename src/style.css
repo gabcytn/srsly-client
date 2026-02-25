@@ -8,6 +8,12 @@
   --background-main: #fafaf8;
   --background-main-inverse: var(--p-zinc-900);
   --light-text: var(--p-zinc-600);
+  --easy: #22c55e;
+  --easy-bg: rgba(34, 197, 94, 0.12);
+  --medium: #f59e0b;
+  --medium-bg: rgba(245, 158, 11, 0.12);
+  --hard: #ef4444;
+  --hard-bg: rgba(239, 68, 68, 0.12);
 }
 
 :root[class="app-dark"] {
@@ -36,12 +42,40 @@ body {
   font-family: "Cormorant Garamond", sans-serif;
 }
 
+.bg-easy {
+  background-color: var(--easy-bg);
+}
+
+.bg-medium {
+  background-color: var(--medium-bg);
+}
+
+.bg-hard {
+  background-color: var(--hard-bg);
+}
+
+.text-easy {
+  color: var(--easy);
+}
+
+.text-medium {
+  color: var(--medium);
+}
+
+.text-hard {
+  color: var(--hard);
+}
+
 .text-light {
   color: var(--light-text);
 }
 
 .bg-primary {
   background-color: var(--p-primary-color);
+}
+
+.bg-mycard {
+  background-color: var(--p-content-card-background) !important;
 }
 
 .container {
@@ -51,14 +85,5 @@ body {
 }
 
 .p-toast-message-icon {
-  width: 12px !important;
-  height: 12px !important;
-}
-
-.p-toast-summary {
-  font-size: 0.9rem !important;
-}
-
-.p-toast-detail {
-  font-size: 0.785rem !important;
+  margin-top: 0.25rem;
 }

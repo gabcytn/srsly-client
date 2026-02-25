@@ -2,8 +2,8 @@
 import navItems from "@/shared/nav-items";
 </script>
 <template>
-  <Toast />
-  <Menu :model="navItems" class="hidden md:flex w-60 min-h-dvh flex-col pb-5">
+  <SidebarDrawer />
+  <Menu :model="navItems" class="hidden md:flex w-70 h-dvh flex-col pb-5 bg-mycard sticky top-0">
     <template #start>
       <span class="inline-flex items-center gap-1 py-4 ps-5">
         <span class="text-xl font-semibold font-jetbrains-mono"
