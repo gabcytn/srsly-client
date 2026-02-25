@@ -1,42 +1,25 @@
 <script setup lang="ts">
-import { problem as p } from "@/shared/sample-api-response";
 import type { Problem } from "@/shared/types";
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
 import DifficultyTag from "../DifficultyTag.vue";
 import ProblemTag from "../ProblemTag.vue";
-const isLoading = ref(false);
-const problem = ref<Problem>();
 
-const route = useRoute();
-async function fetchProblem() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      problem.value = p;
-      resolve(route.params.id);
-    }, 1000);
-  });
-}
-
-onMounted(async () => {
-  isLoading.value = true;
-  const res = await fetchProblem();
-  console.log(`param: ${res}`);
-  isLoading.value = false;
-});
+defineProps<{
+  problem: Problem;
+}>();
 </script>
 <template>
-  <div v-if="isLoading">
-    <SkeletonLoader />
-  </div>
-  <div v-if="!isLoading && problem" class="mt-5">
+  <div class="mt-5">
     <div class="flex gap-2">
       <span class="sm:inline font-jetbrains-mono text-sm text-light"
         >#{{ problem.questionFrontendId }}</span
       >
       <DifficultyTag :label="problem?.difficulty" />
     </div>
-    <h1 class="font-bold text-3xl mt-3">{{ problem?.title }}</h1>
+
+    <div class="flex justify-between items-center">
+      <h1 class="font-bold text-3xl mt-3">{{ problem?.title }}</h1>
+      <Button v-if="!problem.isSolved" label="Start Reviewing" size="small" />
+    </div>
 
     <div class="flex flex-wrap gap-1.25 mt-3">
       <ProblemTag v-for="(tag, idx) in problem.topicTags" :label="tag.name" :key="idx" />

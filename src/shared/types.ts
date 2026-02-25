@@ -29,3 +29,78 @@ export interface Problem {
   topicTags: Tag[];
   url: string;
 }
+
+// AI RESPONSE TYPES
+interface Bugs {
+  hasBugs: boolean;
+  riskDetails: string[];
+}
+
+interface Complexity {
+  timeComplexity: string;
+  spaceComplexity: string;
+  isComplexityOptimal: boolean;
+}
+
+interface Correctness {
+  isCorrect: boolean;
+  issues: string[];
+}
+
+interface Improvements {
+  suggestedChanges: string[];
+  alternativeApproaches: string[];
+}
+
+enum Quality {
+  Poor,
+  Fair,
+  Good,
+  Excellent,
+}
+
+interface Readability {
+  namingQuality: Quality;
+  codeStructure: Quality;
+  commentsNeeded: boolean;
+}
+
+enum Verdict {
+  Accepted,
+  ConditionallyAccepted,
+  Rejected,
+}
+
+enum Rating {
+  Excellent,
+  Good,
+  Average,
+  Poor,
+}
+enum Confidence {
+  LOW,
+  MEDIUM,
+  HIGH,
+}
+
+interface Summary {
+  overallRating: Rating;
+  verdict: Verdict;
+  confidence: Confidence;
+}
+
+export interface AiCritique {
+  summary: Summary;
+  correctness: Correctness;
+  complexity: Complexity;
+  readability: Readability;
+  bugs: Bugs;
+  improvements: Improvements;
+}
+export interface Solution {
+  id: number;
+  title: string;
+  code: string;
+  aiCritique?: AiCritique | null;
+  note: string | null;
+}
