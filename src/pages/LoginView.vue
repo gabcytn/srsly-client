@@ -19,7 +19,7 @@ type LoginErrors = {
   password: { message: string }[];
 };
 
-const resolver = ({ values }) => {
+const resolver = ({ values }: { values: any }) => {
   const errors: LoginErrors = {
     email: [],
     password: [],
@@ -36,7 +36,7 @@ const resolver = ({ values }) => {
     errors,
   };
 };
-async function onFormSubmit({ valid, values }) {
+async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) {
   if (!valid) {
     addToast(toast, "error", "Login Failed", undefined, 3000);
     return;

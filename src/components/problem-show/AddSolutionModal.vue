@@ -13,8 +13,8 @@ const initialValues = reactive({
 });
 const isSubmitting = ref(false);
 
-function resolver({ values }) {
-  const errors = {};
+function resolver({ values }: { values: any }) {
+  const errors: any = {};
 
   if (!values.title) {
     errors.title = [{ message: "Title is required." }];
@@ -28,7 +28,7 @@ function resolver({ values }) {
   };
 }
 
-async function onFormSubmit({ valid }) {
+async function onFormSubmit({ valid }: { valid: boolean }) {
   if (valid) {
     isSubmitting.value = true;
     await simulateSubmit();
