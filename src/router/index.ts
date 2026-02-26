@@ -11,6 +11,18 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/dashboard",
+      name: "dashboard",
+      component: () => import("../pages/DashboardView.vue"),
+      meta: { public: true },
+    },
+    {
+      path: "/problems/:id",
+      name: "problemShow",
+      component: () => import("../pages/ProblemView.vue"),
+      meta: { public: true },
+    },
+    {
       path: "/auth/login",
       name: "login",
       component: () => import("../pages/LoginView.vue"),
@@ -44,7 +56,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  if (to.path === "/") {
+  if (to.path === "/" || to.path === "/dashboard" || to.name === "problemShow") {
     return true;
   }
   const auth = useAuthStore();
