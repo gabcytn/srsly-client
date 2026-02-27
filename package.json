@@ -15,6 +15,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@highlightjs/vue-plugin": "^2.1.0",
     "@primeuix/themes": "^2.0.3",
     "@primevue/forms": "^4.5.4",
     "@tailwindcss/vite": "^4.1.18",

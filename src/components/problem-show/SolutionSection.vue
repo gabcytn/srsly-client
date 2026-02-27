@@ -13,11 +13,12 @@ const route = useRoute();
 const solutions = ref<Solution[]>();
 const isLoading = ref(false);
 const solutionModalOpen = ref(false);
+const openSolution = ref<string[]>(["0"]);
 
 onMounted(async () => {
   isLoading.value = true;
   await fetchSolutions();
-  // solutions.value = solutionList;
+  solutions.value = solutionList;
   isLoading.value = false;
 });
 
@@ -46,4 +47,43 @@ function toggleSolutionModal() {
   <p v-if="!isLoading && !solutions" class="text-center text-sm mt-3 mb-5">
     You have no solution for this problem yet. Click 'Add Solution' to add one.
   </p>
+  <Accordion :value="openSolution" multiple>
+    <AccordionPanel v-for="(solution, idx) in solutionList" :key="solution.id" :value="String(idx)">
+      <AccordionHeader>{{ solution.title }}</AccordionHeader>
+      <AccordionContent>
+        <highlightjs autodetect :code="solution.code" />
+        <div class="note-container p-4 mt-5 rounded-lg">
+          <p class="text-xs text-light mb-2">NOTES</p>
+          <p class="text-sm">{{ solution.note }}</p>
+        </div>
+        <div class="flex justify-end mt-3">
+          <Button
+            severity="secondary"
+            size="small"
+            label="AI Code Critique"
+            class="border-surface! px-3!"
+            icon="pi pi-arrow-right"
+            icon-pos="right"
+          />
+        </div>
+      </AccordionContent>
+    </AccordionPanel>
+  </Accordion>
 </template>
+
+<style lang="css" scoped>
+.note-container {
+  background-color: var(--constraint);
+}
+</style>
+
+<style lang="css">
+span[class^="hljs"],
+span[class*=" hljs"] {
+  font-family: monospace;
+}
+
+.hljs {
+  background-color: transparent;
+}
+</style>

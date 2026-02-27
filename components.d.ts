@@ -11,6 +11,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('primevue/accordion')['default']
+    AccordionContent: typeof import('primevue/accordioncontent')['default']
+    AccordionHeader: typeof import('primevue/accordionheader')['default']
+    AccordionPanel: typeof import('primevue/accordionpanel')['default']
     AddSolutionModal: typeof import('./src/components/problem-show/AddSolutionModal.vue')['default']
     ApproachSection: typeof import('./src/components/landing/ApproachSection.vue')['default']
     AudienceSection: typeof import('./src/components/landing/AudienceSection.vue')['default']

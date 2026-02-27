@@ -7,6 +7,12 @@ import { definePreset } from "@primeuix/themes";
 import { createPinia } from "pinia";
 import AnimateOnScroll from "primevue/animateonscroll";
 import ToastService from "primevue/toastservice";
+import "highlight.js/styles/stackoverflow-dark.css";
+import "highlight.js/lib/common";
+// import hljs from "highlight.js/lib/core";
+// import javascript from "highlight.js/lib/languages/javascript";
+// import java from "highlight.js/lib/languages/java";
+import hljsVuePlugin from "@highlightjs/vue-plugin";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -55,6 +61,7 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(pinia);
 app.use(router);
+app.use(hljsVuePlugin);
 app.directive("animateonscroll", AnimateOnScroll);
 
 app.mount("#app");

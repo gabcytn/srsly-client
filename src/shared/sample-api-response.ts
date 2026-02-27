@@ -170,9 +170,16 @@ export const suggestedProblems: Problem[] = [
 export const solutionList: Solution[] = [
   {
     id: 103,
-    code: "class Solution {\n  public int[] twoSum(int[] nums, int target) {\n    Map<Integer, Integer> map = new HashMap<>();\n    for (int i = 0; i < nums.length; i++) {\n      int diff = target - nums[i];\n      if (map.containsKey(diff))\n        return new int[]{ map.get(diff), i};\n      map.put(nums[i], i);\n    }\n    return new int[0];\n  }\n}",
-    title: "69 TITLE",
+    code: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n      Map<Integer, Integer> map = new HashMap<>();\n      for (int i = 0; i < nums.length; i++) {\n          int diff = target - nums[i];\n          if (map.containsKey(diff))\n            return new int[]{ map.get(diff), i};\n        map.put(nums[i], i);\n      }\n      return new int[0];\n    }\n}",
+    title: "Optimal Solution",
     aiCritique: null,
-    note: null,
+    note: "O(n) time, O(1) space. Classic two-pointer technique that avoids the need for precomputed arrays. We maintain running maximums from both ends. Lorem ipsum dolor sit amet adecpitus",
+  },
+  {
+    id: 104,
+    code: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n      Map<Integer, Integer> map = new HashMap<>();\n      for (int i = 0; i < nums.length; i++) {\n          int diff = target - nums[i];\n          if (map.containsKey(diff))\n            return new int[]{ map.get(diff), i};\n        map.put(nums[i], i);\n      }\n      return new int[0];\n    }\n}",
+    title: "Suboptimal Solution",
+    aiCritique: null,
+    note: "O(n) time, O(1) space. Classic two-pointer technique that avoids the need for precomputed arrays. We maintain running maximums from both ends. Lorem ipsum dolor sit amet adecpitus",
   },
 ];
