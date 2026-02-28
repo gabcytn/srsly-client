@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Solution } from "@/shared/types";
 import { ref } from "vue";
-import AiCritique from "./AiCritique.vue";
+import AiCritique from "./ai/AiCritique.vue";
 import { sampleCritique } from "@/shared/sample-api-response";
 
 const props = defineProps<{
@@ -76,5 +76,12 @@ async function generateAiCritique() {
 <style lang="css" scoped>
 .note-container {
   background-color: var(--constraint);
+}
+</style>
+
+<style lang="css">
+pre,
+pre code {
+  white-space: pre-wrap;
 }
 </style>

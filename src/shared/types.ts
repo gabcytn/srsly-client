@@ -31,18 +31,18 @@ export interface Problem {
 }
 
 // AI RESPONSE TYPES
-interface Bugs {
+export interface Bugs {
   hasBugs: boolean;
   riskDetails: string[];
 }
 
-interface Complexity {
+export interface Complexity {
   timeComplexity: string;
   spaceComplexity: string;
   isComplexityOptimal: boolean;
 }
 
-interface Correctness {
+export interface Correctness {
   isCorrect: boolean;
   issues: string[];
 }
@@ -52,9 +52,9 @@ interface Improvements {
   alternativeApproaches: string[];
 }
 
-type Quality = "Poor" | "Fair" | "Good" | "Excellent";
+export type Quality = "Poor" | "Fair" | "Good" | "Excellent";
 
-interface Readability {
+export interface Readability {
   namingQuality: Quality;
   codeStructure: Quality;
   commentsNeeded: boolean;
@@ -66,7 +66,7 @@ type Rating = "Excellent" | "Good" | "Average" | "Poor";
 
 type Confidence = "LOW" | "MEDIUM" | "HIGH";
 
-interface Summary {
+export interface Summary {
   overallRating: Rating;
   verdict: Verdict;
   confidence: Confidence;
