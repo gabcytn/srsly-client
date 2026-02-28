@@ -1,4 +1,4 @@
-import { type PaginatedSrsProblem, type Problem, type Solution } from "./types";
+import { type AiCritique, type PaginatedSrsProblem, type Problem, type Solution } from "./types";
 
 export const paginatedSrsProblem: PaginatedSrsProblem = {
   content: [
@@ -167,12 +167,44 @@ export const suggestedProblems: Problem[] = [
   },
 ];
 
+export const sampleCritique: AiCritique = {
+  summary: {
+    overallRating: "Excellent",
+    verdict: "Accepted",
+    confidence: "HIGH",
+  },
+  correctness: {
+    isCorrect: true,
+    issues: [],
+  },
+  complexity: {
+    timeComplexity: "O(n)",
+    spaceComplexity: "O(n)",
+    isComplexityOptimal: true,
+  },
+  readability: {
+    namingQuality: "Excellent",
+    codeStructure: "Excellent",
+    commentsNeeded: false,
+  },
+  bugs: {
+    hasBugs: false,
+    riskDetails: ["Lorem ipsum risk details"],
+  },
+  improvements: {
+    suggestedChanges: ["lorem ipsum suggested changes"],
+    alternativeApproaches: [
+      "Two pointers approach (requires sorting, O(n log n) time, O(1) or O(n) space depending on sorting implementation).",
+    ],
+  },
+};
+
 export const solutionList: Solution[] = [
   {
     id: 103,
     code: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n      Map<Integer, Integer> map = new HashMap<>();\n      for (int i = 0; i < nums.length; i++) {\n          int diff = target - nums[i];\n          if (map.containsKey(diff))\n            return new int[]{ map.get(diff), i};\n        map.put(nums[i], i);\n      }\n      return new int[0];\n    }\n}",
     title: "Optimal Solution",
-    aiCritique: null,
+    aiCritique: sampleCritique,
     note: "O(n) time, O(1) space. Classic two-pointer technique that avoids the need for precomputed arrays. We maintain running maximums from both ends. Lorem ipsum dolor sit amet adecpitus",
   },
   {
@@ -180,6 +212,6 @@ export const solutionList: Solution[] = [
     code: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n      Map<Integer, Integer> map = new HashMap<>();\n      for (int i = 0; i < nums.length; i++) {\n          int diff = target - nums[i];\n          if (map.containsKey(diff))\n            return new int[]{ map.get(diff), i};\n        map.put(nums[i], i);\n      }\n      return new int[0];\n    }\n}",
     title: "Suboptimal Solution",
     aiCritique: null,
-    note: "O(n) time, O(1) space. Classic two-pointer technique that avoids the need for precomputed arrays. We maintain running maximums from both ends. Lorem ipsum dolor sit amet adecpitus",
+    note: null,
   },
 ];

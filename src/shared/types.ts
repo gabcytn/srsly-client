@@ -52,12 +52,7 @@ interface Improvements {
   alternativeApproaches: string[];
 }
 
-enum Quality {
-  Poor,
-  Fair,
-  Good,
-  Excellent,
-}
+type Quality = "Poor" | "Fair" | "Good" | "Excellent";
 
 interface Readability {
   namingQuality: Quality;
@@ -65,23 +60,11 @@ interface Readability {
   commentsNeeded: boolean;
 }
 
-enum Verdict {
-  Accepted,
-  ConditionallyAccepted,
-  Rejected,
-}
+type Verdict = "Accepted" | "ConditionallyAccepted" | "Rejected";
 
-enum Rating {
-  Excellent,
-  Good,
-  Average,
-  Poor,
-}
-enum Confidence {
-  LOW,
-  MEDIUM,
-  HIGH,
-}
+type Rating = "Excellent" | "Good" | "Average" | "Poor";
+
+type Confidence = "LOW" | "MEDIUM" | "HIGH";
 
 interface Summary {
   overallRating: Rating;
