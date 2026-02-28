@@ -6,6 +6,7 @@ import type { MenuItem } from "primevue/menuitem";
 import { ref } from "vue";
 import DifficultyTag from "../DifficultyTag.vue";
 import ProblemTag from "../ProblemTag.vue";
+import router from "@/router";
 
 const props = defineProps<{
   problem: Problem;
@@ -24,6 +25,9 @@ const menuPopoverItems: MenuItem[] = [
         label: "View Full Problem",
         icon: "pi pi-eye",
         class: "text-xs",
+        command: () => {
+          router.push(`/problems/${props.problem.questionFrontendId}`);
+        },
       },
       {
         label: "Open in LeetCode",
