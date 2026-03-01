@@ -3,9 +3,10 @@ import { type AiCritique, type PaginatedSrsProblem, type Problem, type Solution 
 export const paginatedSrsProblem: PaginatedSrsProblem = {
   content: [
     {
+      id: 2,
       repetitions: 0,
-      lastAttemptAt: "2026-02-13",
-      nextAttemptAt: "2026-02-14",
+      lastAttemptAt: "2026-02-24",
+      nextAttemptAt: "2026-02-25",
       status: "NEW",
       problem: {
         questionFrontendId: 1,
@@ -13,70 +14,104 @@ export const paginatedSrsProblem: PaginatedSrsProblem = {
         difficulty: "Easy",
         topicTags: [
           {
-            name: "Hash Table",
+            name: "Array",
           },
           {
-            name: "Array",
+            name: "Hash Table",
           },
         ],
         url: "https://leetcode.com/problems/two-sum/",
       },
     },
     {
-      repetitions: 0,
-      lastAttemptAt: "2026-02-13",
-      nextAttemptAt: "2026-02-14",
-      status: "NEW",
+      id: 3,
+      repetitions: 1,
+      lastAttemptAt: "2026-02-24",
+      nextAttemptAt: "2026-02-25",
+      status: "LEARNING",
       problem: {
-        questionFrontendId: 2,
-        title: "Add Two Numbers",
+        questionFrontendId: 901,
+        title: "Online Stock Span",
         difficulty: "Medium",
         topicTags: [
           {
-            name: "Recursion",
+            name: "Data Stream",
           },
           {
-            name: "Linked List",
+            name: "Design",
+          },
+          {
+            name: "Stack",
+          },
+          {
+            name: "Monotonic Stack",
+          },
+        ],
+        url: "https://leetcode.com/problems/online-stock-span/",
+      },
+    },
+    {
+      id: 52,
+      repetitions: 1,
+      lastAttemptAt: "2026-02-24",
+      nextAttemptAt: "2026-02-25",
+      status: "LEARNING",
+      problem: {
+        questionFrontendId: 365,
+        title: "Water and Jug Problem",
+        difficulty: "Medium",
+        topicTags: [
+          {
+            name: "Math",
+          },
+          {
+            name: "Breadth-First Search",
+          },
+          {
+            name: "Depth-First Search",
+          },
+        ],
+        url: "https://leetcode.com/problems/water-and-jug-problem/",
+      },
+    },
+    {
+      id: 102,
+      repetitions: 0,
+      lastAttemptAt: "2026-02-25",
+      nextAttemptAt: "2026-02-26",
+      status: "NEW",
+      problem: {
+        questionFrontendId: 69,
+        title: "Sqrt(x)",
+        difficulty: "Easy",
+        topicTags: [
+          {
+            name: "Binary Search",
           },
           {
             name: "Math",
           },
         ],
-        url: "https://leetcode.com/problems/add-two-numbers/",
-      },
-    },
-    {
-      repetitions: 0,
-      lastAttemptAt: "2026-02-13",
-      nextAttemptAt: "2026-02-27",
-      status: "NEW",
-      problem: {
-        questionFrontendId: 23,
-        title: "Find the Lexicographically Largest String From the Box II",
-        difficulty: "Hard",
-        topicTags: [
-          {
-            name: "Linked List",
-          },
-          {
-            name: "Heap",
-          },
-          {
-            name: "Divide & Conquer",
-          },
-        ],
-        url: "https://leetcode.com/problems/merge-k-sorted-lists/",
+        url: "https://leetcode.com/problems/sqrtx/",
       },
     },
   ],
   page: 0,
-  size: 10,
-  totalElements: 3,
+  size: 5,
+  totalElements: 4,
   totalPages: 1,
-  numberOfElements: 3,
-  sort: [],
+  numberOfElements: 4,
+  sort: [
+    {
+      direction: "ASC",
+      property: "nextAttemptAt",
+      ignoreCase: false,
+      nullHandling: "NATIVE",
+      ascending: true,
+      descending: false,
+    },
+  ],
 };
-
 export const emptySrsProblems: PaginatedSrsProblem = {
   content: [],
   page: 0,
@@ -92,7 +127,9 @@ export const problem: Problem = {
   title: "Two Sum",
   content:
     "<p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return <em>indices of the two numbers such that they add up to <code>target</code></em>.</p>\n\n<p>You may assume that each input would have <strong><em>exactly</em> one solution</strong>, and you may not use the <em>same</em> element twice.</p>\n\n<p>You can return the answer in any order.</p>\n\n<p> </p>\n<p><strong>Example 1:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums &#61; [2,7,11,15], target &#61; 9\n<strong>Output:</strong> [0,1]\n<strong>Explanation:</strong> Because nums[0] &#43; nums[1] &#61;&#61; 9, we return [0, 1].\n</pre>\n\n<p><strong>Example 2:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums &#61; [3,2,4], target &#61; 6\n<strong>Output:</strong> [1,2]\n</pre>\n\n<p><strong>Example 3:</strong></p>\n\n<pre>\n<strong>Input:</strong> nums &#61; [3,3], target &#61; 6\n<strong>Output:</strong> [0,1]\n</pre>\n\n<p> </p>\n<p><strong>Constraints:</strong></p>\n\n<ul><li><code>2 &lt;&#61; nums.length &lt;&#61; 10<sup>4</sup></code></li><li><code>-10<sup>9</sup> &lt;&#61; nums[i] &lt;&#61; 10<sup>9</sup></code></li><li><code>-10<sup>9</sup> &lt;&#61; target &lt;&#61; 10<sup>9</sup></code></li><li><strong>Only one valid answer exists.</strong></li></ul>\n\n<p> </p>\n<strong>Follow-up: </strong>Can you come up with an algorithm that is less than <code>O(n<sup>2</sup>)</code> time complexity?",
-  isSolved: false,
+  isSolved: true,
+  nextReviewAt: "2026-03-01",
+  srsId: 2,
   difficulty: "Easy",
   topicTags: [
     {

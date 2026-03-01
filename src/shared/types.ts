@@ -1,5 +1,13 @@
 import type { InjectionKey, Ref } from "vue";
 
+interface Sort {
+  direction: string;
+  property: string;
+  ignoreCase: boolean;
+  nullHandling: string;
+  ascending: boolean;
+  descending: boolean;
+}
 export interface PaginatedSrsProblem {
   content: ProblemContent[];
   page: number;
@@ -7,11 +15,12 @@ export interface PaginatedSrsProblem {
   totalElements: number;
   totalPages: number;
   numberOfElements: number;
-  sort: string[];
+  sort: Sort[];
 }
 
 interface ProblemContent {
-  repetitions: 0;
+  id: number;
+  repetitions: number;
   lastAttemptAt: string;
   nextAttemptAt: string;
   status: "NEW" | "LEARNING" | "REVIEWING" | "MASTERED";
@@ -27,6 +36,8 @@ export interface Problem {
   title: string;
   content?: string | null;
   isSolved?: boolean | null;
+  nextReviewAt?: string | null | undefined;
+  srsId?: number | null | undefined;
   difficulty: "Easy" | "Medium" | "Hard";
   topicTags: Tag[];
   url: string;

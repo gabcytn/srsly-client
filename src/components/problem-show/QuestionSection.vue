@@ -4,12 +4,15 @@ import DifficultyTag from "../DifficultyTag.vue";
 import ProblemTag from "../ProblemTag.vue";
 import { ref } from "vue";
 import InitialReviewModal from "./InitialReviewModal.vue";
+import isNow from "@/utils/is-now";
+import ReviewDialog from "../dashboard/dialog/ReviewDialog.vue";
 
 defineProps<{
   problem: Problem;
 }>();
 
 const initialReviewModalOpen = ref(false);
+const reviewNowModalOpen = ref(false);
 </script>
 <template>
   <div class="mt-5">
@@ -28,7 +31,18 @@ const initialReviewModalOpen = ref(false);
         size="small"
         @click="initialReviewModalOpen = true"
       />
+      <Button
+        v-if="problem.isSolved && problem.nextReviewAt && isNow(problem.nextReviewAt)"
+        label="Review"
+        size="small"
+        @click="reviewNowModalOpen = true"
+      />
       <InitialReviewModal v-model:is-open="initialReviewModalOpen" />
+      <ReviewDialog
+        v-if="problem.srsId"
+        :srs-id="problem.srsId"
+        v-model:is-open="reviewNowModalOpen"
+      />
     </div>
 
     <div class="flex flex-wrap gap-1.25 mt-3">

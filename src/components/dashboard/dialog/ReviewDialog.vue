@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { Problem } from "@/shared/types";
 import addToast from "@/utils/addToast";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
 const props = defineProps<{
-  problem: Problem;
+  srsId: number;
 }>();
 const model = defineModel("isOpen", { type: Boolean, required: true });
 const isLoading = ref(false);
@@ -46,7 +45,7 @@ async function onSubmit() {
   }
   isLoading.value = true;
   console.warn("submitting...");
-  console.warn(props.problem.title);
+  console.warn(props.srsId);
   console.warn(`grade: ${selectedGrade.value}`);
   await requestSim();
   // TODO: actual API request

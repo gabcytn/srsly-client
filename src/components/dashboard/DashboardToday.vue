@@ -2,6 +2,7 @@
 import { paginatedSrsProblem } from "@/shared/sample-api-response";
 import type { PaginatedSrsProblem, Problem } from "@/shared/types";
 import { computed, ref, watch } from "vue";
+import ReviewDialog from "./dialog/ReviewDialog.vue";
 
 const completed = ref(3);
 const reviews = ref(7);
@@ -25,6 +26,19 @@ function clickReview(problem: Problem) {
   showReviewDialog.value = true;
   selectedProblem.value = problem;
 }
+
+function getSrsId() {
+  if (selectedProblem.value) {
+    const found = paginatedReviewProblems.value.content.find(
+      (p) => p.problem.questionFrontendId === selectedProblem.value?.questionFrontendId,
+    );
+    if (!found) throw new Error("SRS Problem Not Found.");
+
+    return found.id;
+  }
+
+  throw new Error("No Selected Problem Yet.");
+}
 </script>
 
 <template>
@@ -34,7 +48,7 @@ function clickReview(problem: Problem) {
     <SearchBar />
   </div>
   <div class="mt-5 space-y-2">
-    <ReviewDialog v-model:is-open="showReviewDialog" :problem="selectedProblem" />
+    <ReviewDialog v-if="selectedProblem" v-model:is-open="showReviewDialog" :srs-id="getSrsId()" />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
       :key="reviewProblem.problem.questionFrontendId"
