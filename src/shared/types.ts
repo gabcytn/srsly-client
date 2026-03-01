@@ -10,6 +10,7 @@ interface Sort {
 }
 export interface PaginatedSrsProblem {
   content: ProblemContent[];
+  solvedCount: number;
   page: number;
   size: number;
   totalElements: number;

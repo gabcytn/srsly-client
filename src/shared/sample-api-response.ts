@@ -3,27 +3,6 @@ import { type AiCritique, type PaginatedSrsProblem, type Problem, type Solution 
 export const paginatedSrsProblem: PaginatedSrsProblem = {
   content: [
     {
-      id: 2,
-      repetitions: 0,
-      lastAttemptAt: "2026-02-24",
-      nextAttemptAt: "2026-02-25",
-      status: "NEW",
-      problem: {
-        questionFrontendId: 1,
-        title: "Two Sum",
-        difficulty: "Easy",
-        topicTags: [
-          {
-            name: "Array",
-          },
-          {
-            name: "Hash Table",
-          },
-        ],
-        url: "https://leetcode.com/problems/two-sum/",
-      },
-    },
-    {
       id: 3,
       repetitions: 1,
       lastAttemptAt: "2026-02-24",
@@ -96,6 +75,7 @@ export const paginatedSrsProblem: PaginatedSrsProblem = {
       },
     },
   ],
+  solvedCount: 1,
   page: 0,
   size: 5,
   totalElements: 4,
@@ -114,6 +94,7 @@ export const paginatedSrsProblem: PaginatedSrsProblem = {
 };
 export const emptySrsProblems: PaginatedSrsProblem = {
   content: [],
+  solvedCount: 0,
   page: 0,
   size: 10,
   totalElements: 0,
