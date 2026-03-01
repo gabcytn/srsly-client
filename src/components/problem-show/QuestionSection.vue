@@ -2,10 +2,14 @@
 import type { Problem } from "@/shared/types";
 import DifficultyTag from "../DifficultyTag.vue";
 import ProblemTag from "../ProblemTag.vue";
+import { ref } from "vue";
+import InitialReviewModal from "./InitialReviewModal.vue";
 
 defineProps<{
   problem: Problem;
 }>();
+
+const initialReviewModalOpen = ref(false);
 </script>
 <template>
   <div class="mt-5">
@@ -18,7 +22,13 @@ defineProps<{
 
     <div class="flex justify-between items-center">
       <h1 class="font-bold text-3xl mt-3">{{ problem?.title }}</h1>
-      <Button v-if="!problem.isSolved" label="Start Reviewing" size="small" />
+      <Button
+        v-if="!problem.isSolved"
+        label="Start Reviewing"
+        size="small"
+        @click="initialReviewModalOpen = true"
+      />
+      <InitialReviewModal v-model:is-open="initialReviewModalOpen" />
     </div>
 
     <div class="flex flex-wrap gap-1.25 mt-3">

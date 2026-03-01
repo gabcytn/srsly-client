@@ -1,3 +1,5 @@
+import type { InjectionKey, Ref } from "vue";
+
 export interface PaginatedSrsProblem {
   content: ProblemContent[];
   page: number;
@@ -87,3 +89,10 @@ export interface Solution {
   aiCritique?: AiCritique | null;
   note: string | null;
 }
+
+export type ProblemContext = {
+  problem: Ref<Problem | undefined>;
+  markAsSolved: () => void;
+};
+
+export const ProblemKey: InjectionKey<ProblemContext> = Symbol("ProblemContext");

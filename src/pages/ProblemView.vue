@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { problem as p } from "@/shared/sample-api-response";
 import SolutionSection from "@/components/problem-show/SolutionSection.vue";
-import type { Problem } from "@/shared/types";
-import { onMounted, ref } from "vue";
+import { ProblemKey, type Problem } from "@/shared/types";
+import { onMounted, provide, ref } from "vue";
 import { useRoute } from "vue-router";
 import QuestionSection from "@/components/problem-show/QuestionSection.vue";
 
@@ -18,6 +18,16 @@ async function fetchProblem() {
     }, 1000);
   });
 }
+
+function markAsSolved() {
+  if (!problem.value) return;
+  problem.value = { ...problem.value, isSolved: true };
+}
+
+provide(ProblemKey, {
+  problem,
+  markAsSolved,
+});
 
 onMounted(async () => {
   isLoading.value = true;
