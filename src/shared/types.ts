@@ -10,13 +10,17 @@ interface Sort {
 }
 export interface PaginatedSrsProblem {
   content: ProblemContent[];
-  solvedCount: number;
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
   numberOfElements: number;
   sort: Sort[];
+}
+
+export interface ReviewProgress {
+  unsolved: number;
+  solved: number;
 }
 
 interface ProblemContent {

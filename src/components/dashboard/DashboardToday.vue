@@ -8,8 +8,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["update:problemsPage"]);
 
-const completed = ref(props.problems.solvedCount);
-const reviews = ref(props.problems.numberOfElements);
 const showReviewDialog = ref(false);
 const selectedProblem = ref<Problem | null>(null);
 
@@ -43,7 +41,6 @@ function getSrsId() {
 </script>
 
 <template>
-  <TodaysProgress :numerator="completed" :denominator="reviews" />
   <div class="mt-5">
     <h1 class="font-bold text-xl">Review Today</h1>
     <SearchBar />

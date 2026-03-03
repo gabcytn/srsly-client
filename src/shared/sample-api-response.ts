@@ -1,4 +1,10 @@
-import { type AiCritique, type PaginatedSrsProblem, type Problem, type Solution } from "./types";
+import {
+  type AiCritique,
+  type PaginatedSrsProblem,
+  type Problem,
+  type ReviewProgress,
+  type Solution,
+} from "./types";
 
 export const paginatedSrsProblem: PaginatedSrsProblem = {
   content: [
@@ -75,7 +81,6 @@ export const paginatedSrsProblem: PaginatedSrsProblem = {
       },
     },
   ],
-  solvedCount: 1,
   page: 0,
   size: 5,
   totalElements: 4,
@@ -94,13 +99,17 @@ export const paginatedSrsProblem: PaginatedSrsProblem = {
 };
 export const emptySrsProblems: PaginatedSrsProblem = {
   content: [],
-  solvedCount: 0,
   page: 0,
   size: 10,
   totalElements: 0,
   totalPages: 1,
   numberOfElements: 0,
   sort: [],
+};
+
+export const reviewProgress: ReviewProgress = {
+  solved: 3,
+  unsolved: 2,
 };
 
 export const problem: Problem = {
