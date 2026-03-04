@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
-import addToast from "@/utils/addToast";
 import { Form } from "@primevue/forms";
 import { useToast } from "primevue/usetoast";
 import { reactive, ref } from "vue";
@@ -38,7 +37,11 @@ const resolver = ({ values }: { values: any }) => {
 };
 async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) {
   if (!valid) {
-    addToast(toast, "error", "Login Failed", undefined, 3000);
+    toast.add({
+      severity: "error",
+      summary: "Login Failed",
+      life: 3000,
+    });
     return;
   }
   try {
@@ -47,7 +50,12 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
     router.push({ path: "/home" });
   } catch (e: unknown) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error occured";
-    addToast(toast, "error", "Login Failed", errorMessage, 3000);
+    toast.add({
+      severity: "error",
+      summary: "Login Failed",
+      detail: errorMessage,
+      life: 3000,
+    });
   } finally {
     isLoading.value = false;
   }
@@ -57,7 +65,6 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   <section
     class="max-w-175 mx-auto w-[90%] p-10 mt-10 rounded border border-gray-300 section-container"
   >
-    <Toast class="text-xs" />
     <div class="text-center">
       <h1 class="font-bold text-lg">Welcome Back</h1>
       <p class="text-sm">

@@ -103,7 +103,6 @@ async function submit(values: any) {
 </script>
 
 <template>
-  <Toast />
   <Dialog v-model:visible="model" modal header="Review" class="max-w-125 w-[90%]">
     <Form v-slot="$form" :resolver @submit="onFormSubmit" class="space-y-3">
       <div class="flex flex-col gap-2">

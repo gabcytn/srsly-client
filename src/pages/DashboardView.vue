@@ -58,7 +58,6 @@ onMounted(loadDashboardData);
 </script>
 <template>
   <div class="md:flex">
-    <Toast />
     <SidebarNav />
     <main class="max-w-275 w-full mx-auto p-5">
       <SkeletonLoader v-if="isLoading" />

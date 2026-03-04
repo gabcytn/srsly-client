@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import addToast from "@/utils/addToast";
 import { Form } from "@primevue/forms";
 import { Dialog, InputText, Textarea, useToast } from "primevue";
 import { reactive, ref } from "vue";
@@ -32,7 +31,12 @@ async function onFormSubmit({ valid }: { valid: boolean }) {
   if (valid) {
     isSubmitting.value = true;
     await simulateSubmit();
-    addToast(toast, "success", "Form is submitted", undefined, 3000);
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: "Form is submitted.",
+      life: 3000,
+    });
     model.value = false;
   }
 }
@@ -48,7 +52,6 @@ async function simulateSubmit() {
 </script>
 
 <template>
-  <Toast />
   <Dialog v-model:visible="model" modal header="Add Solution" class="max-w-100 w-[90%]">
     <Form v-slot="$form" :initialValues :resolver @submit="onFormSubmit" class="space-y-2">
       <div class="">

@@ -71,7 +71,6 @@ async function requestSim() {
 </script>
 
 <template>
-  <Toast />
   <Dialog v-model:visible="model" modal header="Review" class="max-w-87.5 w-[90%]">
     <h1 class="mb-3">How well did you recall this?</h1>
     <div class="flex justify-center gap-1.5">
