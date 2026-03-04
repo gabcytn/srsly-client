@@ -42,8 +42,8 @@ onMounted(async () => {
     <SidebarNav />
     <main class="max-w-275 w-full mx-auto p-5">
       <SkeletonLoader v-if="isLoading" />
-      <QuestionSection v-if="!isLoading && problem" :problem="problem" />
-      <SolutionSection v-if="!isLoading && problem && problem.isSolved" :problem="problem" />
+      <QuestionSection v-if="!isLoading && problem" :problem />
+      <SolutionSection v-if="!isLoading && problem && problem.isSolved" :problem />
     </main>
   </div>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import addToast from "@/utils/addToast";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
@@ -40,7 +39,12 @@ function resetRating() {
 
 async function onSubmit() {
   if (selectedGrade.value === null) {
-    addToast(toast, "error", "Failed", "Select a rating first.", 3000);
+    toast.add({
+      severity: "error",
+      summary: "Failed",
+      detail: "Select a rating first.",
+      life: 3000,
+    });
     return;
   }
   isLoading.value = true;

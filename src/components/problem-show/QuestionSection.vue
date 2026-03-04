@@ -7,12 +7,17 @@ import InitialReviewModal from "./InitialReviewModal.vue";
 import isNow from "@/utils/is-now";
 import ReviewDialog from "../dashboard/dialog/ReviewDialog.vue";
 
-defineProps<{
+const props = defineProps<{
   problem: Problem;
 }>();
 
 const initialReviewModalOpen = ref(false);
 const reviewNowModalOpen = ref(false);
+
+function reviewButtonPresent() {
+  const p = props.problem;
+  return p.isSolved && p.nextReviewAt && isNow(p.nextReviewAt);
+}
 </script>
 <template>
   <div class="mt-5">
@@ -32,14 +37,14 @@ const reviewNowModalOpen = ref(false);
         @click="initialReviewModalOpen = true"
       />
       <Button
-        v-if="problem.isSolved && problem.nextReviewAt && isNow(problem.nextReviewAt)"
+        v-if="reviewButtonPresent()"
         label="Review"
         size="small"
         @click="reviewNowModalOpen = true"
       />
-      <InitialReviewModal v-model:is-open="initialReviewModalOpen" />
+      <InitialReviewModal v-if="!problem.isSolved" v-model:is-open="initialReviewModalOpen" />
       <ReviewDialog
-        v-if="problem.srsId"
+        v-if="problem.srsId && reviewButtonPresent()"
         :srs-id="problem.srsId"
         v-model:is-open="reviewNowModalOpen"
       />
