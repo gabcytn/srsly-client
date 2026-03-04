@@ -7,7 +7,7 @@ import { sampleCritique } from "@/shared/sample-api-response";
 const props = defineProps<{
   solution: Solution;
 }>();
-const emit = defineEmits(["update:solution"]);
+const emit = defineEmits(["update:solution", "click:edit-button"]);
 
 const aiVisible = ref(false);
 const aiCritiqueLoading = ref(false);
@@ -55,7 +55,7 @@ async function generateAiCritique() {
     <p class="text-xs text-light mb-2">NOTES</p>
     <p class="text-sm">{{ solution.note }}</p>
   </div>
-  <div class="flex justify-end mt-3">
+  <div class="flex justify-end mt-3 gap-2">
     <Button
       severity="secondary"
       size="small"
@@ -66,6 +66,7 @@ async function generateAiCritique() {
       :disabled="aiCritiqueLoading"
       @click="handleAiClick"
     />
+    <Button severity="warn" size="small" label="Edit" @click="$emit('click:edit-button')" />
   </div>
   <div v-if="aiCritiqueLoading" class="note-container mt-3 p-3 rounded-lg text-xs text-light">
     Analyzing your solution...
