@@ -11,10 +11,20 @@ const isLoading = ref(false);
 const problem = ref<Problem>();
 
 async function fetchProblem() {
+  console.warn("refetching problem...");
+  const data = (await reqProblemFromServer()) as Problem;
+  problem.value = data;
+}
+
+async function reqProblemFromServer() {
   return new Promise((resolve) => {
     setTimeout(() => {
-      problem.value = p;
-      resolve(route.params.id);
+      const paramId = Number(route.params.id);
+      if (!paramId || Number.isNaN(paramId)) {
+        throw new Error("Invalid param id");
+      }
+
+      resolve(p);
     }, 1000);
   });
 }
@@ -31,8 +41,7 @@ provide(ProblemKey, {
 
 onMounted(async () => {
   isLoading.value = true;
-  const res = await fetchProblem();
-  console.log(`param: ${res}`);
+  await fetchProblem();
   isLoading.value = false;
 });
 </script>
@@ -42,7 +51,7 @@ onMounted(async () => {
     <SidebarNav />
     <main class="max-w-275 w-full mx-auto p-5">
       <SkeletonLoader v-if="isLoading" />
-      <QuestionSection v-if="!isLoading && problem" :problem />
+      <QuestionSection v-if="!isLoading && problem" :problem :refresh-problem="fetchProblem" />
       <SolutionSection v-if="!isLoading && problem && problem.isSolved" :problem />
     </main>
   </div>

@@ -4,7 +4,10 @@ import { ref, watch } from "vue";
 
 const props = defineProps<{
   srsId: number;
+  isFromProblemShow?: boolean;
 }>();
+
+const emit = defineEmits(["refresh:data"]);
 const model = defineModel("isOpen", { type: Boolean, required: true });
 const isLoading = ref(false);
 const toast = useToast();
@@ -53,6 +56,7 @@ async function onSubmit() {
   console.warn(`grade: ${selectedGrade.value}`);
   await requestSim();
   // TODO: actual API request
+  emit("refresh:data");
   isLoading.value = false;
   model.value = false;
 }

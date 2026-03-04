@@ -46,7 +46,12 @@ function getSrsId() {
     <SearchBar />
   </div>
   <div class="mt-5 space-y-2">
-    <ReviewDialog v-if="selectedProblem" v-model:is-open="showReviewDialog" :srs-id="getSrsId()" />
+    <ReviewDialog
+      v-if="selectedProblem"
+      v-model:is-open="showReviewDialog"
+      :srs-id="getSrsId()"
+      @refresh:data="$emit('update:problemsPage')"
+    />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
       :key="reviewProblem.problem.questionFrontendId"

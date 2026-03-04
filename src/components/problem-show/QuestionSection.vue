@@ -9,6 +9,7 @@ import ReviewDialog from "../dashboard/dialog/ReviewDialog.vue";
 
 const props = defineProps<{
   problem: Problem;
+  refreshProblem: () => void;
 }>();
 
 const initialReviewModalOpen = ref(false);
@@ -46,6 +47,8 @@ function reviewButtonPresent() {
       <ReviewDialog
         v-if="problem.srsId && reviewButtonPresent()"
         :srs-id="problem.srsId"
+        :is-from-problem-show="true"
+        @refresh:data="refreshProblem"
         v-model:is-open="reviewNowModalOpen"
       />
     </div>
