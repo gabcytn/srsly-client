@@ -1,27 +1,17 @@
 # srsly-client
 
-This template should help get you started developing with Vue 3 in Vite.
+Frontend application for [srsly](https://github.com/gabcytn/srsly) and is currently in **active development**.
 
-## Recommended IDE Setup
+At the moment, the app uses **static mock data** to power the UI. Integration with the live API is actively being implemented.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Current Status
 
-## Recommended Browser Setup
+- Core UI components implemented
+- Pages wired with static/mock data
+- API integration in progress
+- Loading states and error handling to be finalized alongside API work
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+Using static data allows continued UI development while backend endpoints are being completed.
 
 ## Project Setup
 
