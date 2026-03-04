@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { Problem } from "@/shared/types";
-import addToast from "@/utils/addToast";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
 const props = defineProps<{
-  problem: Problem;
+  srsId: number;
+  isFromProblemShow?: boolean;
 }>();
+
+const emit = defineEmits(["refresh:data"]);
 const model = defineModel("isOpen", { type: Boolean, required: true });
 const isLoading = ref(false);
 const toast = useToast();
@@ -41,15 +42,21 @@ function resetRating() {
 
 async function onSubmit() {
   if (selectedGrade.value === null) {
-    addToast(toast, "error", "Failed", "Select a rating first.", 3000);
+    toast.add({
+      severity: "error",
+      summary: "Failed",
+      detail: "Select a rating first.",
+      life: 3000,
+    });
     return;
   }
   isLoading.value = true;
   console.warn("submitting...");
-  console.warn(props.problem.title);
+  console.warn(props.srsId);
   console.warn(`grade: ${selectedGrade.value}`);
   await requestSim();
   // TODO: actual API request
+  emit("refresh:data");
   isLoading.value = false;
   model.value = false;
 }
@@ -64,7 +71,6 @@ async function requestSim() {
 </script>
 
 <template>
-  <Toast />
   <Dialog v-model:visible="model" modal header="Review" class="max-w-87.5 w-[90%]">
     <h1 class="mb-3">How well did you recall this?</h1>
     <div class="flex justify-center gap-1.5">

@@ -1,40 +1,57 @@
 <script setup lang="ts">
-import { paginatedSrsProblem } from "@/shared/sample-api-response";
 import type { PaginatedSrsProblem, Problem } from "@/shared/types";
-import { computed, ref, watch } from "vue";
+import { ref, watch } from "vue";
+import ReviewDialog from "./dialog/ReviewDialog.vue";
 
-const completed = ref(3);
-const reviews = ref(7);
+const props = defineProps<{
+  problems: PaginatedSrsProblem;
+}>();
+const emit = defineEmits(["update:problemsPage"]);
 
-const paginatedReviewProblems = ref<PaginatedSrsProblem>(paginatedSrsProblem);
-const reviewProblems = computed(() => paginatedReviewProblems.value.content);
+const showReviewDialog = ref(false);
+const selectedProblem = ref<Problem | null>(null);
+
+const reviewProblems = ref(props.problems.content);
 
 const first = ref(0);
 watch(first, (newVal) => {
   const newPage = newVal / 5;
-  console.warn(newPage);
-  // TODO: query for next page
+  emit("update:problemsPage", newPage);
 });
-// const elementsPerRow = computed(() => paginatedReviewProblems.value.size)
-// const totalElements = computed(() => paginatedReviewProblems.value.totalElements)
-
-const showReviewDialog = ref(false);
-const selectedProblem = ref<Problem | null>(null);
+const rows = ref(props.problems.size);
+const totalRecords = ref(props.problems.totalElements);
 
 function clickReview(problem: Problem) {
   showReviewDialog.value = true;
   selectedProblem.value = problem;
 }
+
+function getSrsId() {
+  if (selectedProblem.value) {
+    const found = props.problems.content.find(
+      (p) => p.problem.questionFrontendId === selectedProblem.value?.questionFrontendId,
+    );
+    if (!found) throw new Error("SRS Problem Not Found.");
+
+    return found.id;
+  }
+
+  throw new Error("No Selected Problem Yet.");
+}
 </script>
 
 <template>
-  <TodaysProgress :numerator="completed" :denominator="reviews" />
   <div class="mt-5">
     <h1 class="font-bold text-xl">Review Today</h1>
     <SearchBar />
   </div>
   <div class="mt-5 space-y-2">
-    <ReviewDialog v-model:is-open="showReviewDialog" :problem="selectedProblem" />
+    <ReviewDialog
+      v-if="selectedProblem"
+      v-model:is-open="showReviewDialog"
+      :srs-id="getSrsId()"
+      @refresh:data="$emit('update:problemsPage')"
+    />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
       :key="reviewProblem.problem.questionFrontendId"
@@ -55,8 +72,8 @@ function clickReview(problem: Problem) {
           default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
         }"
         v-model:first="first"
-        :rows="5"
-        :totalRecords="30"
+        :rows
+        :totalRecords
         class="text-xs"
       >
       </Paginator>

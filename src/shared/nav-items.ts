@@ -1,3 +1,4 @@
+import router from "@/router";
 import type { MenuItem } from "primevue/menuitem";
 
 const navItems: MenuItem[] = [
@@ -7,6 +8,9 @@ const navItems: MenuItem[] = [
   {
     label: "Dashboard",
     icon: "pi pi-objects-column",
+    command: () => {
+      router.push({ path: "/dashboard" });
+    },
   },
   {
     label: "All Problems",
