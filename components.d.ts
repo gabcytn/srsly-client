@@ -27,6 +27,7 @@ declare module 'vue' {
     CallToActionSection: typeof import('./src/components/landing/CallToActionSection.vue')['default']
     Card: typeof import('primevue/card')['default']
     ComplexityCritique: typeof import('./src/components/problem-show/ai/ComplexityCritique.vue')['default']
+    ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     CorrectnessCritique: typeof import('./src/components/problem-show/ai/CorrectnessCritique.vue')['default']
     DashboardHeader: typeof import('./src/components/dashboard/DashboardHeader.vue')['default']
     DashboardToday: typeof import('./src/components/dashboard/DashboardToday.vue')['default']

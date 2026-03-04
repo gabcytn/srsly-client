@@ -96,16 +96,6 @@ function toggle(event: Event) {
   </div>
 </template>
 
-<style lang="css">
-.p-menu-submenu-label {
-  font-size: 0.85rem;
-}
-
-.p-menu-item-icon {
-  font-size: 0.75rem;
-}
-</style>
-
 <style lang="css" scoped>
 @media (max-width: 440px) {
   .problem-title {

@@ -3,14 +3,77 @@ import type { Solution } from "@/shared/types";
 import { ref } from "vue";
 import AiCritique from "./ai/AiCritique.vue";
 import { sampleCritique } from "@/shared/sample-api-response";
+import type { MenuItem } from "primevue/menuitem";
+import { useConfirm, useToast } from "primevue";
 
 const props = defineProps<{
   solution: Solution;
 }>();
-const emit = defineEmits(["update:solution", "click:edit-button"]);
+const emit = defineEmits([
+  "update:solution",
+  "delete:solution",
+  "click:edit-button",
+  "click:delete-button",
+]);
+
+const toast = useToast();
+const confirm = useConfirm();
 
 const aiVisible = ref(false);
 const aiCritiqueLoading = ref(false);
+
+const menu = ref();
+const menuPopoverItems: MenuItem[] = [
+  {
+    label: "Actions",
+    items: [
+      {
+        label: "Edit",
+        icon: "pi pi-pen-to-square",
+        class: "text-xs",
+        command: () => {
+          emit("click:edit-button");
+        },
+      },
+      {
+        label: "Delete",
+        icon: "pi pi-trash",
+        class: "text-xs",
+        command: confirmDelete,
+      },
+    ],
+  },
+];
+function toggleMenu(event: Event) {
+  menu.value.toggle(event);
+}
+
+function confirmDelete() {
+  confirm.require({
+    message: "Do you want to delete this solution?",
+    header: "Danger Zone",
+    icon: "pi pi-info-circle",
+    rejectLabel: "Cancel",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Delete",
+      severity: "danger",
+    },
+    accept: () => {
+      toast.add({
+        severity: "info",
+        summary: "Confirmed",
+        detail: `Record ${props.solution.title} deleted`,
+        life: 3000,
+      });
+      emit("delete:solution", props.solution);
+    },
+  });
+}
 
 function getButtonLabel() {
   if (props.solution.aiCritique) {
@@ -66,7 +129,18 @@ async function generateAiCritique() {
       :disabled="aiCritiqueLoading"
       @click="handleAiClick"
     />
-    <Button severity="warn" size="small" label="Edit" @click="$emit('click:edit-button')" />
+    <div class="flex justify-center">
+      <Button
+        type="button"
+        icon="pi pi-ellipsis-v"
+        size="small"
+        severity="secondary"
+        @click="toggleMenu"
+        aria-haspopup="true"
+        aria-controls="overlay_menu"
+      />
+      <Menu ref="menu" :model="menuPopoverItems" popup id="overlay_menu" />
+    </div>
   </div>
   <div v-if="aiCritiqueLoading" class="note-container mt-3 p-3 rounded-lg text-xs text-light">
     Analyzing your solution...

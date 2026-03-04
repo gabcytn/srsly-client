@@ -89,3 +89,11 @@ body {
 .p-toast-message-icon {
   margin-top: 0.25rem;
 }
+
+.p-menu-submenu-label {
+  font-size: 0.85rem;
+}
+
+.p-menu-item-icon {
+  font-size: 0.75rem;
+}

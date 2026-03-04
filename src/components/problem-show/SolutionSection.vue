@@ -36,6 +36,12 @@ async function fetchSolutions() {
 
 function updateSolution(solution: Solution) {
   solutions.value = solutions.value.map((s) => (s.id === solution.id ? { ...solution } : s));
+  // TODO: net request
+}
+
+function deleteSolution(solution: Solution) {
+  solutions.value = solutions.value.filter((s) => s.id !== solution.id);
+  // TODO: net request
 }
 
 function createSolution(solution: Solution) {
@@ -60,6 +66,7 @@ function openSolutionModal() {
 </script>
 
 <template>
+  <ConfirmDialog></ConfirmDialog>
   <AddSolutionModal
     :key="selectedSolution?.id ?? 'new'"
     v-model:is-open="solutionModalOpen"
@@ -86,6 +93,7 @@ function openSolutionModal() {
         <SolutionContent
           :solution
           @update:solution="updateSolution"
+          @delete:solution="deleteSolution"
           @click:edit-button="openEditSolutionModal(solution)"
         />
       </AccordionContent>
