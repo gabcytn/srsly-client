@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PaginatedSrsProblem, Problem } from "@/shared/types";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import ReviewDialog from "./dialog/ReviewDialog.vue";
 
 const props = defineProps<{
@@ -11,7 +11,7 @@ const emit = defineEmits(["update:problemsPage"]);
 const showReviewDialog = ref(false);
 const selectedProblem = ref<Problem | null>(null);
 
-const reviewProblems = ref(props.problems.content);
+const reviewProblems = computed(() => props.problems.content);
 
 const first = ref(0);
 watch(first, (newVal) => {
@@ -50,7 +50,7 @@ function getSrsId() {
       v-if="selectedProblem"
       v-model:is-open="showReviewDialog"
       :srs-id="getSrsId()"
-      @refresh:data="$emit('update:problemsPage')"
+      @refresh:data="first = 0"
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"

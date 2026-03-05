@@ -1,10 +1,26 @@
 <script lang="ts" setup>
-import { suggestedProblems } from "@/shared/sample-api-response";
 import type { Problem } from "@/shared/types";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import ProblemCard from "./ProblemCard.vue";
+import api from "@/api";
+import { useToast } from "primevue";
 
-const items = ref<Problem[] | []>(suggestedProblems);
+const toast = useToast();
+const items = ref<Problem[]>([]);
+
+onMounted(async () => {
+  try {
+    const data = (await api.get("/problems/suggested")) as Problem[];
+    items.value = data;
+  } catch (e: unknown) {
+    toast.add({
+      severity: "error",
+      summary: "Something went wrong.",
+      detail: e instanceof Error ? e.message : "Unknown error occured",
+      life: 3000,
+    });
+  }
+});
 </script>
 
 <template>
