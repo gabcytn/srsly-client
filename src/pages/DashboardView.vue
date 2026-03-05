@@ -4,12 +4,23 @@ import DashboardToday from "@/components/dashboard/DashboardToday.vue";
 import SkeletonLoader from "@/components/problem-show/SkeletonLoader.vue";
 import type { ReviewProgress, PaginatedSrsProblem } from "@/shared/types";
 import { useToast } from "primevue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const toast = useToast();
 const isLoading = ref(false);
 const problems = ref<PaginatedSrsProblem>();
-const progress = ref<ReviewProgress>();
+const progress = ref<ReviewProgress>({
+  solved: 0,
+  unsolved: 0,
+});
+const numerator = computed(() => progress.value.solved);
+const denominator = computed(() => progress.value.solved + progress.value.unsolved);
+
+function incrementProgress() {
+  const solved = progress.value.solved + 1;
+  const unsolved = progress.value.unsolved - 1;
+  progress.value = { solved, unsolved };
+}
 
 async function fetchDashboardData(path: string) {
   const data = (await api.get(path)) as PaginatedSrsProblem;
@@ -63,15 +74,12 @@ onMounted(loadDashboardData);
     <main class="max-w-275 w-full mx-auto p-5">
       <SkeletonLoader v-if="isLoading" />
       <DashboardHeader v-if="!isLoading" />
-      <TodaysProgress
-        v-if="!isLoading && progress"
-        :numerator="progress.solved"
-        :denominator="progress.solved + progress.unsolved"
-      />
+      <TodaysProgress v-if="!isLoading && progress" :numerator :denominator />
       <DashboardToday
         v-if="!isLoading && problems"
         :problems
         @update:problems-page="loadReviewProblems"
+        @increment:progress="incrementProgress"
       />
       <SuggestedProblems />
     </main>

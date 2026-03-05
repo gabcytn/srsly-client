@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import api from "@/api";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
@@ -51,22 +52,12 @@ async function onSubmit() {
     return;
   }
   isLoading.value = true;
-  console.warn("submitting...");
-  console.warn(props.srsId);
-  console.warn(`grade: ${selectedGrade.value}`);
-  await requestSim();
-  // TODO: actual API request
+  await api.post(`/problems/srs/${props.srsId}`, {
+    grade: selectedGrade.value,
+  });
   emit("refresh:data");
   isLoading.value = false;
   model.value = false;
-}
-
-async function requestSim() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("resolved");
-    }, 1000);
-  });
 }
 </script>
 

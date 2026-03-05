@@ -6,29 +6,29 @@ import ReviewDialog from "./dialog/ReviewDialog.vue";
 const props = defineProps<{
   problems: PaginatedSrsProblem;
 }>();
-const emit = defineEmits(["update:problemsPage"]);
+const emit = defineEmits(["update:problems-page", "increment:progress"]);
 
 const showReviewDialog = ref(false);
-const selectedProblem = ref<Problem | null>(null);
+const selectedProblem = ref<Problem>();
 
 const reviewProblems = computed(() => props.problems.content);
 
 const first = ref(0);
 watch(first, (newVal) => {
   const newPage = newVal / 5;
-  emit("update:problemsPage", newPage);
+  emit("update:problems-page", newPage);
 });
-const rows = ref(props.problems.size);
-const totalRecords = ref(props.problems.totalElements);
+const rows = computed(() => props.problems.size);
+const totalRecords = computed(() => props.problems.totalElements);
 
 function clickReview(problem: Problem) {
-  showReviewDialog.value = true;
   selectedProblem.value = problem;
+  showReviewDialog.value = true;
 }
 
 function getSrsId() {
   if (selectedProblem.value) {
-    const found = props.problems.content.find(
+    const found = reviewProblems.value.find(
       (p) => p.problem.questionFrontendId === selectedProblem.value?.questionFrontendId,
     );
     if (!found) throw new Error("SRS Problem Not Found.");
@@ -37,6 +37,12 @@ function getSrsId() {
   }
 
   throw new Error("No Selected Problem Yet.");
+}
+
+function handleReview() {
+  selectedProblem.value = undefined; // unselect reviewed problem
+  emit("update:problems-page", 0);
+  emit("increment:progress");
 }
 </script>
 
@@ -50,11 +56,11 @@ function getSrsId() {
       v-if="selectedProblem"
       v-model:is-open="showReviewDialog"
       :srs-id="getSrsId()"
-      @refresh:data="first = 0"
+      @refresh:data="handleReview"
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
-      :key="reviewProblem.problem.questionFrontendId"
+      :key="reviewProblem.problem.srsId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
       button-label="Review"
