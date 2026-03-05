@@ -2,6 +2,7 @@
 import type { PaginatedSrsProblem, Problem } from "@/shared/types";
 import { computed, ref, watch } from "vue";
 import ReviewDialog from "./dialog/ReviewDialog.vue";
+import SearchBar from "./SearchBar.vue";
 
 const props = defineProps<{
   problems: PaginatedSrsProblem;
@@ -11,10 +12,16 @@ const emit = defineEmits(["update:problems-page", "increment:progress"]);
 const showReviewDialog = ref(false);
 const selectedProblem = ref<Problem>();
 
+const activeFilter = ref("All");
+const problemSearch = ref("");
+
 const reviewProblems = computed(() => props.problems.content);
 
 const first = ref(0);
 watch(first, (newVal) => {
+  if (problemSearch.value !== "" || activeFilter.value !== "All") {
+    return; // prevents disregarding filter
+  }
   const newPage = newVal / 5;
   emit("update:problems-page", newPage);
 });
@@ -49,7 +56,7 @@ function handleReview() {
 <template>
   <div class="mt-5">
     <h1 class="font-bold text-xl">Review Today</h1>
-    <SearchBar />
+    <SearchBar v-model:search="problemSearch" v-model:difficulty="activeFilter" />
   </div>
   <div class="mt-5 space-y-2">
     <ReviewDialog

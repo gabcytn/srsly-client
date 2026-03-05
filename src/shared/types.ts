@@ -111,4 +111,9 @@ export type ProblemContext = {
   markAsSolved: () => void;
 };
 
+export type LoadReviewProblems = {
+  loadReviewProblems: (page: number, difficulty: string, title: string | undefined) => void;
+};
+
 export const ProblemKey: InjectionKey<ProblemContext> = Symbol("ProblemContext");
+export const LoadReviewProblemsKey: InjectionKey<LoadReviewProblems> = Symbol("FilterProblems");

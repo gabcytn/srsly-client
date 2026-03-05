@@ -1,14 +1,30 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import debounce from "lodash.debounce";
+import { LoadReviewProblemsKey } from "@/shared/types";
+import { inject, watch } from "vue";
 
-const activeFilter = ref("All");
+const searchModel = defineModel("search", { type: String, required: true });
+const activeFilter = defineModel("difficulty", { type: String, required: true });
+
 const filters = ["All", "Easy", "Medium", "Hard"];
 
-const problemSearch = ref("");
+const context = inject(LoadReviewProblemsKey);
+if (!context) throw new Error("Filter context not found.");
+const { loadReviewProblems } = context;
 
 function selectFilter(filter: string) {
+  if (filter === activeFilter.value) return;
   activeFilter.value = filter;
+  loadReviewProblems(0, filter.toLowerCase(), searchModel.value || undefined);
 }
+
+const searchForProblem = debounce((val: string) => {
+  loadReviewProblems(0, activeFilter.value.toLowerCase(), val);
+}, 750);
+
+watch(searchModel, (val) => {
+  searchForProblem(val);
+});
 </script>
 
 <template>
@@ -16,7 +32,8 @@ function selectFilter(filter: string) {
     <IconField class="grow">
       <InputIcon class="pi pi-search" />
       <InputText
-        v-model="problemSearch"
+        type="search"
+        v-model="searchModel"
         placeholder="Search review problems..."
         size="small"
         class="w-full"
