@@ -10,33 +10,24 @@ const props = defineProps<{
 const emit = defineEmits(["update:problems-page", "increment:progress"]);
 
 const showReviewDialog = ref(false);
-const selectedProblem = ref<Problem>();
-
+const selectedProblemForReview = ref<Problem>();
 const activeFilter = ref("All");
 const problemSearch = ref("");
+const paginationPage = ref(0);
 
 const reviewProblems = computed(() => props.problems.content);
-
-const first = ref(0);
-watch(first, (newVal) => {
-  if (problemSearch.value !== "" || activeFilter.value !== "All") {
-    return; // prevents disregarding filter
-  }
-  const newPage = newVal / 5;
-  emit("update:problems-page", newPage);
-});
 const rows = computed(() => props.problems.size);
 const totalRecords = computed(() => props.problems.totalElements);
 
 function clickReview(problem: Problem) {
-  selectedProblem.value = problem;
+  selectedProblemForReview.value = problem;
   showReviewDialog.value = true;
 }
 
 function getSrsId() {
-  if (selectedProblem.value) {
+  if (selectedProblemForReview.value) {
     const found = reviewProblems.value.find(
-      (p) => p.problem.questionFrontendId === selectedProblem.value?.questionFrontendId,
+      (p) => p.problem.questionFrontendId === selectedProblemForReview.value?.questionFrontendId,
     );
     if (!found) throw new Error("SRS Problem Not Found.");
 
@@ -47,20 +38,38 @@ function getSrsId() {
 }
 
 function handleReview() {
-  selectedProblem.value = undefined; // unselect reviewed problem
+  selectedProblemForReview.value = undefined; // unselect reviewed problem
   emit("update:problems-page", 0);
   emit("increment:progress");
 }
+
+function refetchDashboardProblems(page = 0) {
+  emit(
+    "update:problems-page",
+    page,
+    activeFilter.value.toLowerCase(),
+    problemSearch.value || undefined,
+  );
+}
+
+watch(paginationPage, (newVal) => {
+  const newPage = newVal / 5;
+  refetchDashboardProblems(newPage);
+});
 </script>
 
 <template>
   <div class="mt-5">
     <h1 class="font-bold text-xl">Review Today</h1>
-    <SearchBar v-model:search="problemSearch" v-model:difficulty="activeFilter" />
+    <SearchBar
+      v-model:search="problemSearch"
+      v-model:difficulty="activeFilter"
+      @refresh:problems="refetchDashboardProblems"
+    />
   </div>
   <div class="mt-5 space-y-2">
     <ReviewDialog
-      v-if="selectedProblem"
+      v-if="selectedProblemForReview"
       v-model:is-open="showReviewDialog"
       :srs-id="getSrsId()"
       @refresh:data="handleReview"
@@ -84,7 +93,7 @@ function handleReview() {
           '1300px': 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
           default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
         }"
-        v-model:first="first"
+        v-model:first="paginationPage"
         :rows
         :totalRecords
         class="text-xs"

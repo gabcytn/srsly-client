@@ -2,13 +2,9 @@
 import api from "@/api";
 import DashboardToday from "@/components/dashboard/DashboardToday.vue";
 import SkeletonLoader from "@/components/problem-show/SkeletonLoader.vue";
-import {
-  type ReviewProgress,
-  type PaginatedSrsProblem,
-  LoadReviewProblemsKey,
-} from "@/shared/types";
+import { type ReviewProgress, type PaginatedSrsProblem } from "@/shared/types";
 import { useToast } from "primevue";
-import { computed, onMounted, provide, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const toast = useToast();
 const isLoading = ref(false);
@@ -53,10 +49,6 @@ async function loadReviewProblems(
   const data = await fetchDashboardData(path);
   problems.value = data;
 }
-
-provide(LoadReviewProblemsKey, {
-  loadReviewProblems,
-});
 
 async function loadDashboardData() {
   try {
