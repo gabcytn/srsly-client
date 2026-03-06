@@ -17,7 +17,7 @@ const reviewNowModalOpen = ref(false);
 
 function reviewButtonPresent() {
   const p = props.problem;
-  return p.isSolved && p.nextReviewAt && isNow(p.nextReviewAt);
+  return p.isSolved && p.nextAttemptAt && isNow(p.nextAttemptAt);
 }
 </script>
 <template>

@@ -1,52 +1,46 @@
 <script setup lang="ts">
-import { solutionList } from "@/shared/sample-api-response";
 import type { Problem, Solution } from "@/shared/types";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
 import AddSolutionModal from "./AddSolutionModal.vue";
 import SolutionContent from "./SolutionContent.vue";
+import api from "@/api";
+import { useToast } from "primevue";
 
-defineProps<{
+const props = defineProps<{
   problem: Problem;
 }>();
 
-const route = useRoute();
+const toast = useToast();
 const solutions = ref<Solution[]>([]);
 const isLoading = ref(false);
 const selectedSolution = ref<Solution>();
 const solutionModalOpen = ref(false);
 const openSolution = ref<string[]>(["0"]);
 
-onMounted(async () => {
-  isLoading.value = true;
-  await fetchSolutions();
-  solutions.value = solutionList;
-  isLoading.value = false;
-});
-
-async function fetchSolutions() {
-  isLoading.value = true;
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      isLoading.value = false;
-      resolve(route.params.id);
-    }, 1000);
+async function updateSolution(solution: Solution) {
+  await api.patch(`/solutions/${solution.id}`, {
+    title: solution.title,
+    code: solution.code,
+    note: solution.note,
   });
-}
-
-function updateSolution(solution: Solution) {
   solutions.value = solutions.value.map((s) => (s.id === solution.id ? { ...solution } : s));
-  // TODO: net request
 }
 
-function deleteSolution(solution: Solution) {
+async function deleteSolution(solution: Solution) {
+  await api.delete(`/solutions/${solution.id}`);
   solutions.value = solutions.value.filter((s) => s.id !== solution.id);
-  // TODO: net request
 }
 
-function createSolution(solution: Solution) {
+async function createSolution(solution: Solution) {
+  const s = (await api.post(`/problems/${props.problem.questionFrontendId}/solutions`, {
+    title: solution.title,
+    code: solution.code,
+    note: solution.note,
+  })) as Solution;
+  console.log("s");
+  console.log(s);
   const existingSolutions = solutions.value;
-  existingSolutions.push(solution);
+  existingSolutions.push(s);
   solutions.value = existingSolutions;
 }
 
@@ -63,6 +57,24 @@ function openAddSolutionModal() {
 function openSolutionModal() {
   solutionModalOpen.value = true;
 }
+
+onMounted(async () => {
+  try {
+    isLoading.value = true;
+    const data = (await api.get(
+      `/problems/${props.problem.questionFrontendId}/solutions`,
+    )) as Solution[];
+    solutions.value = data;
+  } catch (e: unknown) {
+    toast.add({
+      severity: "error",
+      summary: "Something went wrong",
+      detail: e instanceof Error ? e.message : "Unknown error occured",
+    });
+  } finally {
+    isLoading.value = false;
+  }
+});
 </script>
 
 <template>

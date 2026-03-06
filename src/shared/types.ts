@@ -41,7 +41,7 @@ export interface Problem {
   title: string;
   content?: string | null;
   isSolved?: boolean | null;
-  nextReviewAt?: string | null | undefined;
+  nextAttemptAt?: string | null | undefined;
   srsId?: number | null | undefined;
   difficulty: "Easy" | "Medium" | "Hard";
   topicTags: Tag[];

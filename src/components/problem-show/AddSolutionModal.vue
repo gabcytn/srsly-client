@@ -59,43 +59,18 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
 }
 
 async function solutionNetworkRequest(values: any) {
-  let data;
   if (props.solution) {
-    data = await updateSolution(values);
     emit("update:solution", {
       ...values,
       id: props.solution.id,
       aiCritique: props.solution.aiCritique,
     } as Solution);
   } else {
-    data = await addSolution(values);
     emit("add:solution", {
       ...values,
       id: crypto.randomUUID(),
     });
   }
-
-  return data;
-}
-
-async function addSolution(values: any) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`values: ${values}`);
-      console.warn(values);
-      resolve("");
-    }, 1000);
-  });
-}
-
-async function updateSolution(values: any) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(`values: ${values}`);
-      console.warn(values);
-      resolve("");
-    }, 1000);
-  });
 }
 
 function isCodeDisabled() {
