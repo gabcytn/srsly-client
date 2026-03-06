@@ -41,18 +41,6 @@ const router = createRouter({
       meta: { public: true },
     },
     {
-      path: "/home",
-      name: "home",
-      component: () => import("../pages/HomeView.vue"),
-      meta: { public: false },
-    },
-    {
-      path: "/redirect",
-      name: "redirect",
-      component: () => import("../pages/RedirectView.vue"),
-      meta: { public: false },
-    },
-    {
       path: "/problems",
       name: "allProblems",
       component: () => import("../pages/AllProblemsView.vue"),
@@ -70,7 +58,7 @@ router.beforeEach(async (to) => {
     await auth.init();
   }
   if (to.path.startsWith("/auth") && auth.isAuthenticated) {
-    return "/redirect";
+    return "/dashboard";
   }
   if (to.meta.public) {
     return true;

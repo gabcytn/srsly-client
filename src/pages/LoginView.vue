@@ -47,7 +47,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   try {
     isLoading.value = true;
     await auth.login(values.email, values.password);
-    router.push({ path: "/home" });
+    router.push({ path: "/dashboard" });
   } catch (e: unknown) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error occured";
     toast.add({

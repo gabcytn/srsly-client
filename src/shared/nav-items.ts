@@ -1,6 +1,8 @@
 import router from "@/router";
+import { useAuthStore } from "@/stores/auth";
 import type { MenuItem } from "primevue/menuitem";
 
+const auth = useAuthStore();
 const navItems: MenuItem[] = [
   {
     separator: true,
@@ -32,13 +34,16 @@ const navItems: MenuItem[] = [
     icon: "pi pi-sun",
     command: () => {
       document.documentElement.classList.toggle("app-dark");
+      const isDark = document.documentElement.classList.contains("app-dark");
+      localStorage.setItem("srsly:dark-mode", isDark ? "true" : "false");
     },
   },
   {
     label: "Logout",
     icon: "pi pi-sign-out",
-    command: async () => {
-      console.warn("logout");
+    command: () => {
+      auth.logout();
+      router.push({ path: "/auth/login", replace: true });
     },
   },
 ];
