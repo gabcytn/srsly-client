@@ -48,19 +48,24 @@ export const useAuthStore = defineStore("auth", {
     setAccessToken(token: string | null) {
       this.accessToken = token;
     },
-    async login(email: string, password: string) {
-      const res = await fetch(`${SERVER_URL}/public/auth/login`, {
+    async login(email: string, password: string, action = "login") {
+      const res = await fetch(`${SERVER_URL}/public/auth/${action}`, {
         method: "POST",
         body: JSON.stringify({ email, password, deviceName: navigator.userAgent }),
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       });
       if (!res.ok) {
+        const data = await res.json();
+        if (data && data.detail) throw new Error(data.detail);
         throw new Error(`Error status code: ${res.status}`);
       }
       const data = await res.json();
       this.setAccessToken(data.token);
       localStorage.setItem("srsly:logged-out", "false");
+    },
+    async register(email: string, password: string) {
+      await this.login(email, password, "register");
     },
     async logout() {
       this.setAccessToken(null);
