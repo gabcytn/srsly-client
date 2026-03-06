@@ -52,6 +52,12 @@ const router = createRouter({
       component: () => import("../pages/RedirectView.vue"),
       meta: { public: false },
     },
+    {
+      path: "/problems",
+      name: "allProblems",
+      component: () => import("../pages/AllProblemsView.vue"),
+      meta: { public: false },
+    },
   ],
 });
 

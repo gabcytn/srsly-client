@@ -15,6 +15,9 @@ const navItems: MenuItem[] = [
   {
     label: "All Problems",
     icon: "pi pi-sliders-h",
+    command: () => {
+      router.push({ path: "/problems" });
+    },
   },
   {
     label: "Insights",
