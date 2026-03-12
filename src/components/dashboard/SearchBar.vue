@@ -1,14 +1,26 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import debounce from "lodash.debounce";
+import { watch } from "vue";
 
-const activeFilter = ref("All");
+const emit = defineEmits(["refresh:problems"]);
+const searchModel = defineModel("search", { type: String, required: true });
+const activeFilter = defineModel("difficulty", { type: String, required: true });
+
 const filters = ["All", "Easy", "Medium", "Hard"];
 
-const problemSearch = ref("");
-
 function selectFilter(filter: string) {
+  if (filter === activeFilter.value) return;
   activeFilter.value = filter;
+  emit("refresh:problems");
 }
+
+const searchForProblem = debounce(() => {
+  emit("refresh:problems");
+}, 750);
+
+watch(searchModel, () => {
+  searchForProblem();
+});
 </script>
 
 <template>
@@ -16,7 +28,8 @@ function selectFilter(filter: string) {
     <IconField class="grow">
       <InputIcon class="pi pi-search" />
       <InputText
-        v-model="problemSearch"
+        type="search"
+        v-model="searchModel"
         placeholder="Search review problems..."
         size="small"
         class="w-full"

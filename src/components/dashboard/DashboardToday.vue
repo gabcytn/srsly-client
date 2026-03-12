@@ -1,35 +1,33 @@
 <script setup lang="ts">
 import type { PaginatedSrsProblem, Problem } from "@/shared/types";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import ReviewDialog from "./dialog/ReviewDialog.vue";
+import SearchBar from "./SearchBar.vue";
 
 const props = defineProps<{
   problems: PaginatedSrsProblem;
 }>();
-const emit = defineEmits(["update:problemsPage"]);
+const emit = defineEmits(["update:problems-page", "increment:progress"]);
 
 const showReviewDialog = ref(false);
-const selectedProblem = ref<Problem | null>(null);
+const selectedProblemForReview = ref<Problem>();
+const activeFilter = ref("All");
+const problemSearch = ref("");
+const paginationPage = ref(0);
 
-const reviewProblems = ref(props.problems.content);
-
-const first = ref(0);
-watch(first, (newVal) => {
-  const newPage = newVal / 5;
-  emit("update:problemsPage", newPage);
-});
-const rows = ref(props.problems.size);
-const totalRecords = ref(props.problems.totalElements);
+const reviewProblems = computed(() => props.problems.content);
+const rows = computed(() => props.problems.size);
+const totalRecords = computed(() => props.problems.totalElements);
 
 function clickReview(problem: Problem) {
+  selectedProblemForReview.value = problem;
   showReviewDialog.value = true;
-  selectedProblem.value = problem;
 }
 
 function getSrsId() {
-  if (selectedProblem.value) {
-    const found = props.problems.content.find(
-      (p) => p.problem.questionFrontendId === selectedProblem.value?.questionFrontendId,
+  if (selectedProblemForReview.value) {
+    const found = reviewProblems.value.find(
+      (p) => p.problem.questionFrontendId === selectedProblemForReview.value?.questionFrontendId,
     );
     if (!found) throw new Error("SRS Problem Not Found.");
 
@@ -38,23 +36,47 @@ function getSrsId() {
 
   throw new Error("No Selected Problem Yet.");
 }
+
+function handleReview() {
+  selectedProblemForReview.value = undefined; // unselect reviewed problem
+  emit("update:problems-page", 0);
+  emit("increment:progress");
+}
+
+function refetchDashboardProblems(page = 0) {
+  emit(
+    "update:problems-page",
+    page,
+    activeFilter.value.toLowerCase(),
+    problemSearch.value || undefined,
+  );
+}
+
+watch(paginationPage, (newVal) => {
+  const newPage = newVal / 5;
+  refetchDashboardProblems(newPage);
+});
 </script>
 
 <template>
   <div class="mt-5">
     <h1 class="font-bold text-xl">Review Today</h1>
-    <SearchBar />
+    <SearchBar
+      v-model:search="problemSearch"
+      v-model:difficulty="activeFilter"
+      @refresh:problems="refetchDashboardProblems"
+    />
   </div>
   <div class="mt-5 space-y-2">
     <ReviewDialog
-      v-if="selectedProblem"
+      v-if="selectedProblemForReview"
       v-model:is-open="showReviewDialog"
       :srs-id="getSrsId()"
-      @refresh:data="$emit('update:problemsPage')"
+      @refresh:data="handleReview"
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
-      :key="reviewProblem.problem.questionFrontendId"
+      :key="reviewProblem.problem.srsId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
       button-label="Review"
@@ -71,7 +93,7 @@ function getSrsId() {
           '1300px': 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
           default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink',
         }"
-        v-model:first="first"
+        v-model:first="paginationPage"
         :rows
         :totalRecords
         class="text-xs"
