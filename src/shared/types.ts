@@ -8,14 +8,21 @@ interface Sort {
   ascending: boolean;
   descending: boolean;
 }
-export interface PaginatedSrsProblem {
-  content: ProblemContent[];
+
+interface Paginated {
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
   numberOfElements: number;
   sort: Sort[];
+}
+export interface PaginatedSrsProblem extends Paginated {
+  content: ProblemContent[];
+}
+
+export interface PaginatedProblem extends Paginated {
+  content: Problem[];
 }
 
 export interface ReviewProgress {
@@ -41,7 +48,7 @@ export interface Problem {
   title: string;
   content?: string | null;
   isSolved?: boolean | null;
-  nextReviewAt?: string | null | undefined;
+  nextAttemptAt?: string | null | undefined;
   srsId?: number | null | undefined;
   difficulty: "Easy" | "Medium" | "Hard";
   topicTags: Tag[];

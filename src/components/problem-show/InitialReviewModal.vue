@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import api from "@/api";
 import { ProblemKey } from "@/shared/types";
 import isInFuture from "@/utils/is-in-future";
 import { Form } from "@primevue/forms";
 import { Dialog, Divider, Message, Rating, ToggleSwitch, useToast } from "primevue";
 import { inject, ref } from "vue";
+import { useRoute } from "vue-router";
 
+const route = useRoute();
 const context = inject(ProblemKey);
 if (!context) {
   throw new Error("Could not resolve ProblemContext");
@@ -93,12 +96,15 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
 }
 
 async function submit(values: any) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(values);
-      resolve("Done");
-    }, 1500);
-  });
+  const paramId = Number(route.params.id);
+  if (!paramId || Number.isNaN(paramId)) {
+    throw new Error("Invalid param id");
+  }
+  const confidences = ["LOW", "MEDIUM", "HIGH"];
+  values.lastReviewedAt = new Date(values.lastReviewedAt).toLocaleDateString("en-CA");
+  values.confidence = confidences[values.confidence - 1];
+
+  await api.post(`/problems/${paramId}/solutions/initial`, values);
 }
 </script>
 

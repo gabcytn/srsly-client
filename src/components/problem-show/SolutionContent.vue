@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Solution } from "@/shared/types";
+import type { AiCritique as CritiqueType, Solution } from "@/shared/types";
 import { ref } from "vue";
 import AiCritique from "./ai/AiCritique.vue";
-import { sampleCritique } from "@/shared/sample-api-response";
 import type { MenuItem } from "primevue/menuitem";
 import { useConfirm, useToast } from "primevue";
+import api from "@/api";
 
 const props = defineProps<{
   solution: Solution;
@@ -95,20 +95,15 @@ async function handleAiClick() {
 }
 
 async function generateAiCritique() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // FIX: mutate solution w/ new ai critique
-      const solution: Solution = {
-        id: props.solution.id,
-        title: props.solution.title,
-        code: props.solution.code,
-        aiCritique: sampleCritique,
-        note: props.solution.note,
-      };
-      emit("update:solution", solution);
-      resolve("Done");
-    }, 1000);
-  });
+  const data = (await api.post(`/solutions/${props.solution.id}/ai`)) as CritiqueType;
+  const solution: Solution = {
+    id: props.solution.id,
+    title: props.solution.title,
+    code: props.solution.code,
+    aiCritique: data,
+    note: props.solution.note,
+  };
+  emit("update:solution", solution);
 }
 </script>
 
