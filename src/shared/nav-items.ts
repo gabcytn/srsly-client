@@ -1,6 +1,8 @@
 import router from "@/router";
+import { useAuthStore } from "@/stores/auth";
 import type { MenuItem } from "primevue/menuitem";
 
+const auth = useAuthStore();
 const navItems: MenuItem[] = [
   {
     separator: true,
@@ -19,26 +21,29 @@ const navItems: MenuItem[] = [
       router.push({ path: "/problems" });
     },
   },
-  {
-    label: "Insights",
-    icon: "pi pi-wave-pulse",
-  },
-  {
-    label: "Settings",
-    icon: "pi pi-cog",
-  },
+  // {
+  //   label: "Insights",
+  //   icon: "pi pi-wave-pulse",
+  // },
+  // {
+  //   label: "Settings",
+  //   icon: "pi pi-cog",
+  // },
   {
     label: "Toggle theme",
     icon: "pi pi-sun",
     command: () => {
       document.documentElement.classList.toggle("app-dark");
+      const isDark = document.documentElement.classList.contains("app-dark");
+      localStorage.setItem("srsly:dark-mode", isDark ? "true" : "false");
     },
   },
   {
     label: "Logout",
     icon: "pi pi-sign-out",
-    command: async () => {
-      console.warn("logout");
+    command: () => {
+      auth.logout();
+      router.push({ path: "/auth/login", replace: true });
     },
   },
 ];

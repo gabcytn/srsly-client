@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import api from "@/api";
-import { ProblemKey } from "@/shared/types";
+import { ProblemKey, type Solution } from "@/shared/types";
 import isInFuture from "@/utils/is-in-future";
 import { Form } from "@primevue/forms";
 import { Dialog, Divider, Message, Rating, ToggleSwitch, useToast } from "primevue";
@@ -95,16 +95,36 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   }
 }
 
+type InitialReviewBody = {
+  repetitions: number;
+  lastReviewedAt: string;
+  confidence: string;
+  solution?: Solution;
+};
 async function submit(values: any) {
   const paramId = Number(route.params.id);
   if (!paramId || Number.isNaN(paramId)) {
     throw new Error("Invalid param id");
   }
   const confidences = ["LOW", "MEDIUM", "HIGH"];
-  values.lastReviewedAt = new Date(values.lastReviewedAt).toLocaleDateString("en-CA");
-  values.confidence = confidences[values.confidence - 1];
+  let body: InitialReviewBody = {
+    repetitions: values.repetitions,
+    lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
+    confidence: confidences[values.confidence - 1]!,
+  };
+  if (values.title && values.code) {
+    body = {
+      ...body,
+      solution: {
+        id: 0,
+        title: values.title,
+        code: values.code,
+        note: values.note,
+      },
+    };
+  }
 
-  await api.post(`/problems/${paramId}/solutions/initial`, values);
+  await api.post(`/problems/${paramId}/solutions/initial`, body);
 }
 </script>
 
