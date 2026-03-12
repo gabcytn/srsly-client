@@ -31,6 +31,12 @@ export const useAuthStore = defineStore("auth", {
       });
 
       if (!res.ok) {
+        console.error("error getting refresh token");
+        console.error(`status code: ${res.status}`);
+        const data = await res.json();
+        if (data) {
+          console.error(data);
+        }
         this.logout();
         window.location.href = "/auth/login";
         return;
