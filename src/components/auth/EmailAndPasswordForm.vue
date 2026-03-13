@@ -58,6 +58,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
       severity: "error",
       summary: "Login Failed",
       detail: errorMessage,
+      life: 3000,
     });
   } finally {
     isLoading.value = false;
