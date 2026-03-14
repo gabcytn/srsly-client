@@ -18,8 +18,12 @@
       new questions and start retaining the ones you've already solved.
     </p>
     <div class="flex gap-5">
-      <Button label="Get Started" severity="contrast" class="hero-btn" />
-      <Button label="View on GitHub" severity="contrast" variant="outlined" class="hero-btn" />
+      <router-link to="/dashboard">
+        <Button label="Get Started" severity="contrast" class="hero-btn" />
+      </router-link>
+      <a href="https://github.com/gabcytn/srsly" target="_blank">
+        <Button label="View on GitHub" severity="contrast" variant="outlined" class="hero-btn" />
+      </a>
     </div>
   </section>
 </template>
