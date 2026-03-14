@@ -16,21 +16,29 @@ const auth = useAuthStore();
 const isLoading = ref(false);
 const toast = useToast();
 
-type LoginErrors = {
+type FormErrors = {
   email: { message: string }[];
   password: { message: string }[];
+  confirm: { message: string }[];
 };
 
 const resolver = ({ values }: { values: any }) => {
-  const errors: LoginErrors = {
+  const errors: FormErrors = {
     email: [],
     password: [],
+    confirm: [],
   };
 
   if (!values.email) {
     errors.email = [{ message: "Email is required." }];
   } else if (!values.password) {
     errors.password = [{ message: "Password is required." }];
+  } else if (props.action === "register" && values.password.length < 8) {
+    errors.password = [{ message: "Password must be at least 8 characters." }];
+  } else if (!values.confirm) {
+    errors.confirm = [{ message: "Confirm Password is required." }];
+  } else if (values.confirm !== values.password) {
+    errors.confirm = [{ message: "Passwords do not match." }];
   }
 
   return {
@@ -49,8 +57,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   }
   try {
     isLoading.value = true;
-    if (props.action === "login") await auth.login(values.email, values.password);
-    else await auth.register(values.email, values.password);
+    await submit(values.email, values.password);
     router.push({ path: "/dashboard" });
   } catch (e: unknown) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error occured";
@@ -62,6 +69,16 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
     });
   } finally {
     isLoading.value = false;
+  }
+}
+
+async function submit(email: string, password: string) {
+  if (props.action === "login") {
+    await auth.login(email, password);
+  } else if (props.action === "register") {
+    await auth.register(email, password);
+  } else {
+    throw new Error("Invalid props value.");
   }
 }
 </script>
@@ -111,6 +128,22 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
           />
           <Message v-if="$form.password?.invalid" severity="error" size="small" variant="simple">{{
             $form.password.error?.message
+          }}</Message>
+        </div>
+        <div v-if="action === 'register'">
+          <label class="text-sm ps-1" for="confirm">Confirm Password</label>
+          <Password
+            id="confirm"
+            name="confirm"
+            size="small"
+            class="w-full!"
+            :feedback="false"
+            toggle-mask
+            fluid
+            required
+          />
+          <Message v-if="$form.confirm?.invalid" severity="error" size="small" variant="simple">{{
+            $form.confirm.error?.message
           }}</Message>
         </div>
         <Button

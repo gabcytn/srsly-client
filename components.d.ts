@@ -37,6 +37,7 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     Drawer: typeof import('primevue/drawer')['default']
     DrawerNavItem: typeof import('./src/components/DrawerNavItem.vue')['default']
+    EmailAndPasswordForm: typeof import('./src/components/auth/EmailAndPasswordForm.vue')['default']
     FeatureCard: typeof import('./src/components/landing/FeatureCard.vue')['default']
     FeaturesSection: typeof import('./src/components/landing/FeaturesSection.vue')['default']
     FloatLabel: typeof import('primevue/floatlabel')['default']
