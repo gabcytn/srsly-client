@@ -22,6 +22,12 @@ const repetitions = ref<number>();
 const includeSolution = ref(false);
 const isSubmitting = ref(false);
 
+type InitialReviewBody = {
+  repetitions: number;
+  lastReviewedAt?: string;
+  confidence?: string;
+  solution?: Solution;
+};
 type FormError = {
   message: string;
 };
@@ -95,35 +101,29 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   }
 }
 
-type InitialReviewBody = {
-  repetitions: number;
-  lastReviewedAt: string;
-  confidence: string;
-  solution?: Solution;
-};
 async function submit(values: any) {
   const paramId = Number(route.params.id);
   if (!paramId || Number.isNaN(paramId)) {
     throw new Error("Invalid param id");
   }
-  const confidences = ["LOW", "MEDIUM", "HIGH"];
-  let body: InitialReviewBody = {
+  const confidences = ["LOW", "MEDIUM", "HIGH"] as const;
+  const body: InitialReviewBody = {
     repetitions: values.repetitions,
-    lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
-    confidence: confidences[values.confidence - 1]!,
-  };
-  if (values.title && values.code) {
-    body = {
-      ...body,
-      solution: {
-        id: 0,
-        title: values.title,
-        code: values.code,
-        note: values.note,
-      },
-    };
-  }
 
+    ...(values.repetitions > 0 && {
+      lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
+      confidence: confidences[values.confidence - 1],
+    }),
+
+    ...(values.title &&
+      values.code && {
+        solution: {
+          title: values.title,
+          code: values.code,
+          note: values.note,
+        },
+      }),
+  };
   await api.post(`/problems/${paramId}/solutions/initial`, body);
 }
 </script>
