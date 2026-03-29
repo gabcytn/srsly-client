@@ -95,15 +95,24 @@ async function handleAiClick() {
 }
 
 async function generateAiCritique() {
-  const data = (await api.post(`/solutions/${props.solution.id}/ai`)) as CritiqueType;
-  const solution: Solution = {
-    id: props.solution.id,
-    title: props.solution.title,
-    code: props.solution.code,
-    aiCritique: data,
-    note: props.solution.note,
-  };
-  emit("update:solution", solution);
+  try {
+    const data = (await api.post(`/solutions/${props.solution.id}/ai`)) as CritiqueType;
+    const solution: Solution = {
+      id: props.solution.id,
+      title: props.solution.title,
+      code: props.solution.code,
+      aiCritique: data,
+      note: props.solution.note,
+    };
+    emit("update:solution", solution);
+  } catch {
+    toast.add({
+      severity: "error",
+      summary: "An unexpected error occured",
+      detail: "Try again later.",
+      life: 3000,
+    });
+  }
 }
 </script>
 
