@@ -57,13 +57,13 @@ router.beforeEach(async (to) => {
   if (!auth.isReady) {
     await auth.init();
   }
-  if (to.path.startsWith("/auth") && auth.isAuthenticated) {
+  if (to.path.startsWith("/auth") && auth.isAuthenticated()) {
     return "/dashboard";
   }
   if (to.meta.public) {
     return true;
   }
-  if (!to.meta.public && auth.isAuthenticated) {
+  if (!to.meta.public && auth.isAuthenticated()) {
     return true;
   }
 

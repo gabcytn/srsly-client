@@ -17,8 +17,8 @@ const items: MenuItem[] = [
     url: "#audience",
   },
   {
-    label: auth.isAuthenticated ? "Dashboard" : "Sign In",
-    url: auth.isAuthenticated ? "/dashboard" : "/auth/login",
+    label: auth.isAuthenticated() ? "Dashboard" : "Sign In",
+    url: auth.isAuthenticated() ? "/dashboard" : "/auth/login",
   },
 ];
 </script>
