@@ -43,6 +43,7 @@ declare module 'vue' {
     FloatLabel: typeof import('primevue/floatlabel')['default']
     FooterSection: typeof import('./src/components/landing/FooterSection.vue')['default']
     Form: typeof import('@primevue/forms/form')['default']
+    FormField: typeof import('@primevue/forms/formfield')['default']
     GradeItem: typeof import('./src/components/dashboard/dialog/GradeItem.vue')['default']
     HeaderNav: typeof import('./src/components/HeaderNav.vue')['default']
     HeroSection: typeof import('./src/components/landing/HeroSection.vue')['default']

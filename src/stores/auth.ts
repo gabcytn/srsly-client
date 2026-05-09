@@ -2,7 +2,6 @@ import api from "@/api";
 import { UserBasicDetails } from "@/DTO/UserBasicDetails";
 import type { UserCredentials } from "@/DTO/UserCredentials";
 import { AuthService } from "@/service/AuthService";
-import type { UserDetails, AuthResponse } from "@/shared/types";
 import { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { useToast } from "primevue";
@@ -61,27 +60,45 @@ export const useAuthStore = defineStore("auth", () => {
     userDetails.value = user;
   }
 
-  async function onFormSubmit(action: "login" | "register", credentials: UserCredentials) {
+  async function login(credentials: UserCredentials) {
     try {
       isFormSubmitting.value = true;
-      const data = await AuthService.authenticate(credentials, action);
+      const data = await AuthService.login(credentials);
       setAccessToken(data.jwtResponse.token);
       setUserDetails(new UserBasicDetails(data.email, data.isVerified));
       localStorage.setItem("srsly:logged-out", "false");
     } catch (e: unknown) {
-      let errorMessage = "Unknown error occured";
-      if (e instanceof AxiosError) {
-        errorMessage = e.response?.data.detail;
-      }
-      toast.add({
-        severity: "error",
-        summary: "Login Failed",
-        detail: errorMessage,
-        life: 3000,
-      });
+      handleError(e);
     } finally {
       isFormSubmitting.value = false;
     }
+  }
+
+  async function register(credentials: UserCredentials) {
+    try {
+      isFormSubmitting.value = true;
+      const data = await AuthService.register(credentials);
+      setAccessToken(data.jwtResponse.token);
+      setUserDetails(new UserBasicDetails(data.email, data.isVerified));
+      localStorage.setItem("srsly:logged-out", "false");
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isFormSubmitting.value = false;
+    }
+  }
+
+  function handleError(e: unknown) {
+    let errorMessage = "Unknown error occured";
+    if (e instanceof AxiosError) {
+      errorMessage = e.response?.data.detail;
+    }
+    toast.add({
+      severity: "error",
+      summary: "Login Failed",
+      detail: errorMessage,
+      life: 3000,
+    });
   }
 
   async function logout() {
@@ -97,7 +114,8 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
     init,
     setAccessToken,
-    onFormSubmit,
+    register,
+    login,
     logout,
   };
 });
