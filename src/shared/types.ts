@@ -1,5 +1,21 @@
 import type { InjectionKey, Ref } from "vue";
 
+export interface AuthResponse {
+  email: string;
+  isVerified: boolean;
+  jwtResponse: JwtResponse;
+}
+
+export interface JwtResponse {
+  token: string;
+  expiresAt: number;
+}
+
+export interface UserDetails {
+  email: string;
+  isVerified: boolean;
+}
+
 interface Sort {
   direction: string;
   property: string;

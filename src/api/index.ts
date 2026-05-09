@@ -1,4 +1,5 @@
-import { useAuthStore } from "@/stores/auth";
+import { AuthFacade } from "@/service/AuthFacade";
+// import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 type FailedQueue = {
@@ -13,11 +14,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
-const auth = useAuthStore();
+// const auth = useAuthStore();
 
 api.interceptors.request.use((config) => {
-  if (auth.isAuthenticated()) {
-    config.headers.Authorization = `Bearer ${auth.accessToken}`;
+  if (AuthFacade.isAuthenticated()) {
+    config.headers.Authorization = `Bearer ${AuthFacade.getAccessToken()}`;
   }
   return config;
 });
@@ -77,7 +78,7 @@ api.interceptors.response.use(
 
         const data = await res.json();
         const newToken = data.token;
-        auth.setAccessToken(newToken);
+        AuthFacade.setAccessToken(newToken);
         resolveQueue(newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
@@ -89,7 +90,7 @@ api.interceptors.response.use(
         }
 
         rejectQueue(refreshError);
-        auth.logout();
+        AuthFacade.logout();
         window.location.href = "/auth/login";
 
         return Promise.reject(refreshError);

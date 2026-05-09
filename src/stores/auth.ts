@@ -1,11 +1,21 @@
+import api from "@/api";
+import { UserBasicDetails } from "@/DTO/UserBasicDetails";
+import type { UserCredentials } from "@/DTO/UserCredentials";
+import { AuthService } from "@/service/AuthService";
+import type { UserDetails, AuthResponse } from "@/shared/types";
+import { AxiosError } from "axios";
 import { defineStore } from "pinia";
+import { useToast } from "primevue";
 import { ref } from "vue";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
 export const useAuthStore = defineStore("auth", () => {
+  const toast = useToast();
+  const userDetails = ref<UserBasicDetails>();
   const accessToken = ref<string | undefined>();
   const isReady = ref(false);
+  const isFormSubmitting = ref(false);
 
   function isAuthenticated() {
     return accessToken.value !== undefined;
@@ -47,44 +57,47 @@ export const useAuthStore = defineStore("auth", () => {
     accessToken.value = undefined;
   }
 
-  async function login(email: string, password: string, action = "login") {
-    const res = await fetch(`${SERVER_URL}/public/auth/${action}`, {
-      method: "POST",
-      body: JSON.stringify({ email, password, deviceName: navigator.userAgent }),
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      if (data && data.detail) throw new Error(data.detail);
-      throw new Error(`Error status code: ${res.status}`);
-    }
-    const data = await res.json();
-    setAccessToken(data.token);
-    localStorage.setItem("srsly:logged-out", "false");
+  function setUserDetails(user: UserBasicDetails) {
+    userDetails.value = user;
   }
 
-  async function register(email: string, password: string) {
-    await login(email, password, "register");
+  async function onFormSubmit(action: "login" | "register", credentials: UserCredentials) {
+    try {
+      isFormSubmitting.value = true;
+      const data = await AuthService.authenticate(credentials, action);
+      setAccessToken(data.jwtResponse.token);
+      setUserDetails(new UserBasicDetails(data.email, data.isVerified));
+      localStorage.setItem("srsly:logged-out", "false");
+    } catch (e: unknown) {
+      let errorMessage = "Unknown error occured";
+      if (e instanceof AxiosError) {
+        errorMessage = e.response?.data.detail;
+      }
+      toast.add({
+        severity: "error",
+        summary: "Login Failed",
+        detail: errorMessage,
+        life: 3000,
+      });
+    } finally {
+      isFormSubmitting.value = false;
+    }
   }
 
   async function logout() {
     resetAccessToken();
     localStorage.setItem("srsly:logged-out", "true");
-    await fetch(`${SERVER_URL}/public/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await api.post("/public/auth/logout");
   }
 
   return {
     accessToken,
+    isFormSubmitting,
     isReady,
     isAuthenticated,
     init,
     setAccessToken,
-    login,
-    register,
+    onFormSubmit,
     logout,
   };
 });

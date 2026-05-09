@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { UserCredentials } from "@/DTO/UserCredentials";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
-import { useToast } from "primevue";
-import { ref } from "vue";
+import { FormField } from "@primevue/forms";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { storeToRefs } from "pinia";
+import { reactive } from "vue";
+import z from "zod";
 
 const props = defineProps<{
   title: string;
@@ -12,74 +16,27 @@ const props = defineProps<{
   action: "login" | "register";
 }>();
 
+const initialValues = reactive({
+  email: "",
+  password: "",
+});
+
+const resolver = zodResolver(
+  z.object({
+    email: z.email(),
+    password: z.string().min(1, { message: "Password is required." }),
+  }),
+);
+
 const auth = useAuthStore();
-const isLoading = ref(false);
-const toast = useToast();
+const { isFormSubmitting } = storeToRefs(auth);
 
-type FormErrors = {
-  email: { message: string }[];
-  password: { message: string }[];
-  confirm: { message: string }[];
-};
+async function onSubmit({ valid, values }) {
+  if (!valid) return;
 
-const resolver = ({ values }: { values: any }) => {
-  const errors: FormErrors = {
-    email: [],
-    password: [],
-    confirm: [],
-  };
-
-  if (!values.email) {
-    errors.email = [{ message: "Email is required." }];
-  } else if (!values.password) {
-    errors.password = [{ message: "Password is required." }];
-  } else if (props.action === "register" && values.password.length < 8) {
-    errors.password = [{ message: "Password must be at least 8 characters." }];
-  } else if (!values.confirm) {
-    errors.confirm = [{ message: "Confirm Password is required." }];
-  } else if (values.confirm !== values.password) {
-    errors.confirm = [{ message: "Passwords do not match." }];
-  }
-
-  return {
-    values,
-    errors,
-  };
-};
-async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) {
-  if (!valid) {
-    toast.add({
-      severity: "error",
-      summary: "Login Failed",
-      life: 3000,
-    });
-    return;
-  }
-  try {
-    isLoading.value = true;
-    await submit(values.email, values.password);
-    router.push({ path: "/dashboard" });
-  } catch (e: unknown) {
-    const errorMessage = e instanceof Error ? e.message : "Unknown error occured";
-    toast.add({
-      severity: "error",
-      summary: "Login Failed",
-      detail: errorMessage,
-      life: 3000,
-    });
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-async function submit(email: string, password: string) {
-  if (props.action === "login") {
-    await auth.login(email, password);
-  } else if (props.action === "register") {
-    await auth.register(email, password);
-  } else {
-    throw new Error("Invalid props value.");
-  }
+  const userCredentials = new UserCredentials(values.email, values.password);
+  await auth.onFormSubmit(props.action, userCredentials);
+  router.push("/dashboard");
 }
 </script>
 
@@ -99,37 +56,28 @@ async function submit(email: string, password: string) {
           >
         </p>
       </div>
-      <Form v-slot="$form" :resolver @submit="onFormSubmit" class="space-y-3 mt-3">
-        <div>
-          <label class="text-sm ps-1" for="email">Email</label>
-          <InputText
-            id="email"
-            name="email"
-            type="email"
-            class="w-full bg-white"
-            size="small"
-            required
-          />
-          <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">{{
-            $form.email.error?.message
+      <Form
+        v-slot="$form"
+        :initial-values
+        :resolver
+        @submit="onSubmit"
+        :validate-on-value-update="false"
+        class="space-y-3 mt-3"
+      >
+        <FormField v-slot="$field" name="email">
+          <label class="text-sm ps-1">Email</label>
+          <InputText id="email" type="email" class="w-full bg-white" size="small" />
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
           }}</Message>
-        </div>
-        <div>
-          <label class="text-sm ps-1" for="password">Password</label>
-          <Password
-            id="password"
-            name="password"
-            size="small"
-            class="w-full!"
-            :feedback="false"
-            toggle-mask
-            fluid
-            required
-          />
-          <Message v-if="$form.password?.invalid" severity="error" size="small" variant="simple">{{
-            $form.password.error?.message
+        </FormField>
+        <FormField v-slot="$field" name="password">
+          <label class="text-sm ps-1">Password</label>
+          <Password size="small" class="w-full!" :feedback="false" toggle-mask fluid />
+          <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+            $field.error?.message
           }}</Message>
-        </div>
+        </FormField>
         <div v-if="action === 'register'">
           <label class="text-sm ps-1" for="confirm">Confirm Password</label>
           <Password
@@ -150,7 +98,7 @@ async function submit(email: string, password: string) {
           type="submit"
           label="Sign In"
           size="small"
-          :disabled="isLoading"
+          :disabled="isFormSubmitting"
           icon="pi pi-user"
           class="w-full mt-3"
         />
