@@ -1,12 +1,11 @@
-import api from "@/api";
+import api from "@/api/public";
 import type { UserCredentials } from "@/DTO/UserCredentials";
-import type { AuthResponse } from "@/shared/types";
+import type { AuthResponse, JwtResponse } from "@/shared/types";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 export const AuthService = {
   login: async (credentials: UserCredentials) => {
     const [email, password] = [credentials.getEmail(), credentials.getPassword()];
-    const data = (await api.post(`${SERVER_URL}/public/auth/login`, {
+    const data = (await api.post(`/public/auth/login`, {
       email,
       password,
       deviceName: navigator.userAgent,
@@ -16,12 +15,22 @@ export const AuthService = {
   },
   register: async (credentials: UserCredentials) => {
     const [email, password] = [credentials.getEmail(), credentials.getPassword()];
-    const data = (await api.post(`${SERVER_URL}/public/auth/register`, {
+    const data = (await api.post(`/public/auth/register`, {
       email,
       password,
       deviceName: navigator.userAgent,
     })) as AuthResponse;
 
     return data;
+  },
+  refreshToken: async () => {
+    const data = (await api.post("/public/auth/refresh-token", {
+      deviceName: navigator.userAgent,
+    })) as JwtResponse;
+
+    return data;
+  },
+  logout: async () => {
+    await api.post("/public/auth/logout");
   },
 };

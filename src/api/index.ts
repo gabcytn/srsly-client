@@ -1,5 +1,5 @@
-import { AuthFacade } from "@/service/AuthFacade";
-// import { useAuthStore } from "@/stores/auth";
+import router from "@/router";
+import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 type FailedQueue = {
@@ -14,11 +14,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// const auth = useAuthStore();
+const auth = useAuthStore();
 
 api.interceptors.request.use((config) => {
-  if (AuthFacade.isAuthenticated()) {
-    config.headers.Authorization = `Bearer ${AuthFacade.getAccessToken()}`;
+  if (auth.isAuthenticated()) {
+    config.headers.Authorization = `Bearer ${auth.getAccessToken()}`;
   }
   return config;
 });
@@ -76,13 +76,17 @@ api.interceptors.response.use(
           credentials: "include",
         });
 
+        if (!res.ok && res.status === 403) {
+          throw new Error("Session expired.");
+        }
+
         const data = await res.json();
         const newToken = data.token;
-        AuthFacade.setAccessToken(newToken);
+        auth.setAccessToken(newToken);
         resolveQueue(newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         if (!(refreshError instanceof Error)) {
           console.error("Unknown error thrown.");
           console.error(refreshError);
@@ -90,10 +94,9 @@ api.interceptors.response.use(
         }
 
         rejectQueue(refreshError);
-        AuthFacade.logout();
-        window.location.href = "/auth/login";
+        await logout();
 
-        return Promise.reject(refreshError);
+        // return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
@@ -102,5 +105,11 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+async function logout() {
+  // TODO: display toast for warning
+  await auth.logout();
+  router.replace("/auth/login");
+}
 
 export default api;

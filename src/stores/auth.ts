@@ -1,19 +1,17 @@
-import api from "@/api";
 import { UserBasicDetails } from "@/DTO/UserBasicDetails";
 import type { UserCredentials } from "@/DTO/UserCredentials";
+import router from "@/router";
 import { AuthService } from "@/service/AuthService";
+import type { AuthResponse, JwtResponse } from "@/shared/types";
 import { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { useToast } from "primevue";
 import { ref } from "vue";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
 export const useAuthStore = defineStore("auth", () => {
   const toast = useToast();
   const userDetails = ref<UserBasicDetails>();
   const accessToken = ref<string | undefined>();
-  const isReady = ref(false);
   const isFormSubmitting = ref(false);
 
   function isAuthenticated() {
@@ -22,51 +20,47 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function init() {
     const didLogout = localStorage.getItem("srsly:logged-out") === "true";
-    if (didLogout) {
-      return;
-    }
-    const res = await fetch(`${SERVER_URL}/public/auth/refresh-token`, {
-      method: "POST",
-      body: JSON.stringify({ deviceName: navigator.userAgent }),
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      logout();
-      window.location.href = "/auth/login";
+    if (didLogout || isAuthenticated()) {
       return;
     }
 
-    const data = await res.json();
-    if (data.token) {
+    try {
+      const data = await AuthService.refreshToken();
       setAccessToken(data.token);
-      isReady.value = true;
-      return;
+    } catch {
+      await handleInitError();
     }
+  }
 
-    throw new Error("Token not found.");
+  async function handleInitError() {
+    console.warn("handling init error");
+    toast.add({
+      severity: "error",
+      summary: "Session expired",
+      detail: "Please log in again.",
+      life: 3000,
+    });
+    await logout();
+    router.replace("/auth/login");
   }
 
   function setAccessToken(token: string) {
     accessToken.value = token;
   }
 
-  function resetAccessToken() {
-    accessToken.value = undefined;
+  function getAccessToken() {
+    return accessToken.value;
   }
 
-  function setUserDetails(user: UserBasicDetails) {
-    userDetails.value = user;
+  function resetAccessToken() {
+    accessToken.value = undefined;
   }
 
   async function login(credentials: UserCredentials) {
     try {
       isFormSubmitting.value = true;
       const data = await AuthService.login(credentials);
-      setAccessToken(data.jwtResponse.token);
-      setUserDetails(new UserBasicDetails(data.email, data.isVerified));
-      localStorage.setItem("srsly:logged-out", "false");
+      initializeAuthState(data);
     } catch (e: unknown) {
       handleError(e);
     } finally {
@@ -78,14 +72,18 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       isFormSubmitting.value = true;
       const data = await AuthService.register(credentials);
-      setAccessToken(data.jwtResponse.token);
-      setUserDetails(new UserBasicDetails(data.email, data.isVerified));
-      localStorage.setItem("srsly:logged-out", "false");
+      initializeAuthState(data);
     } catch (e: unknown) {
       handleError(e);
     } finally {
       isFormSubmitting.value = false;
     }
+  }
+
+  function initializeAuthState(data: AuthResponse) {
+    setAccessToken(data.jwtResponse.token);
+    userDetails.value = new UserBasicDetails(data.email, data.isVerified);
+    localStorage.setItem("srsly:logged-out", "false");
   }
 
   function handleError(e: unknown) {
@@ -104,16 +102,15 @@ export const useAuthStore = defineStore("auth", () => {
   async function logout() {
     resetAccessToken();
     localStorage.setItem("srsly:logged-out", "true");
-    await api.post("/public/auth/logout");
+    await AuthService.logout();
   }
 
   return {
-    accessToken,
-    isFormSubmitting,
-    isReady,
     isAuthenticated,
+    isFormSubmitting,
     init,
     setAccessToken,
+    getAccessToken,
     register,
     login,
     logout,

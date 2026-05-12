@@ -50,13 +50,10 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  if (to.path === "/") {
-    return true;
-  }
   const auth = useAuthStore();
-  if (!auth.isReady) {
-    await auth.init();
-  }
+  console.warn("calling init...");
+  await auth.init();
+
   if (to.path.startsWith("/auth") && auth.isAuthenticated()) {
     return "/dashboard";
   }
