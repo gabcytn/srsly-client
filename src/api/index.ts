@@ -1,6 +1,7 @@
 import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
+import { ToastEventBus, type ToastMessageOptions } from "primevue";
 
 type FailedQueue = {
   resolve: (token: string) => void;
@@ -93,10 +94,7 @@ api.interceptors.response.use(
           return;
         }
 
-        rejectQueue(refreshError);
-        await logout();
-
-        // return Promise.reject(refreshError);
+        await handleRefreshError(refreshError);
       } finally {
         isRefreshing = false;
       }
@@ -106,10 +104,24 @@ api.interceptors.response.use(
   },
 );
 
-async function logout() {
-  // TODO: display toast for warning
+async function handleRefreshError(e: Error) {
+  rejectQueue(e);
+  showToastError();
   await auth.logout();
   router.replace("/auth/login");
+}
+
+function showToastError() {
+  const toast = {
+    add: (message: ToastMessageOptions) => ToastEventBus.emit("add", message),
+  };
+
+  toast.add({
+    severity: "error",
+    summary: "Session expired",
+    detail: "Please log in again.",
+    life: 3000,
+  });
 }
 
 export default api;

@@ -33,7 +33,6 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function handleInitError() {
-    console.warn("handling init error");
     toast.add({
       severity: "error",
       summary: "Session expired",
