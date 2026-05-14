@@ -50,21 +50,28 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
+  if (to.meta.public === "/") {
+    return true;
+  }
+
   const auth = useAuthStore();
-  console.warn("calling init...");
   await auth.init();
 
-  if (to.path.startsWith("/auth") && auth.isAuthenticated()) {
+  const isAuthenticated = auth.isAuthenticated();
+
+  if (to.path.startsWith("/auth") && isAuthenticated) {
     return "/dashboard";
   }
+
   if (to.meta.public) {
     return true;
   }
-  if (!to.meta.public && auth.isAuthenticated()) {
-    return true;
+
+  if (!isAuthenticated) {
+    return "/auth/login";
   }
 
-  return "/auth/login";
+  return true;
 });
 
 export default router;

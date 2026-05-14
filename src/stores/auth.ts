@@ -2,7 +2,7 @@ import { UserBasicDetails } from "@/DTO/UserBasicDetails";
 import type { UserCredentials } from "@/DTO/UserCredentials";
 import router from "@/router";
 import { AuthService } from "@/service/AuthService";
-import type { AuthResponse, JwtResponse } from "@/shared/types";
+import type { AuthResponse } from "@/shared/types";
 import { AxiosError } from "axios";
 import { defineStore } from "pinia";
 import { useToast } from "primevue";
@@ -10,6 +10,7 @@ import { ref } from "vue";
 
 export const useAuthStore = defineStore("auth", () => {
   const toast = useToast();
+  const isInitialized = ref(false);
   const userDetails = ref<UserBasicDetails>();
   const accessToken = ref<string | undefined>();
   const isFormSubmitting = ref(false);
@@ -19,28 +20,27 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function init() {
-    const didLogout = localStorage.getItem("srsly:logged-out") === "true";
-    if (didLogout || isAuthenticated()) {
+    if (isAuthenticated() || isInitialized.value) {
       return;
     }
 
     try {
       const data = await AuthService.refreshToken();
       setAccessToken(data.token);
-    } catch {
-      await handleInitError();
+    } catch (e: unknown) {
+      await handleInitError(e);
+    } finally {
+      isInitialized.value = true;
     }
   }
 
-  async function handleInitError() {
-    toast.add({
-      severity: "error",
-      summary: "Session expired",
-      detail: "Please log in again.",
-      life: 3000,
-    });
-    await logout();
-    router.replace("/auth/login");
+  async function handleInitError(e: unknown) {
+    if (e instanceof AxiosError || e instanceof Error) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    throw new Error("Unknown error");
   }
 
   function setAccessToken(token: string) {
@@ -82,7 +82,6 @@ export const useAuthStore = defineStore("auth", () => {
   function initializeAuthState(data: AuthResponse) {
     setAccessToken(data.jwtResponse.token);
     userDetails.value = new UserBasicDetails(data.email, data.isVerified);
-    localStorage.setItem("srsly:logged-out", "false");
   }
 
   function handleError(e: unknown) {
@@ -92,16 +91,15 @@ export const useAuthStore = defineStore("auth", () => {
     }
     toast.add({
       severity: "error",
-      summary: "Login Failed",
+      summary: "Authentication Failed",
       detail: errorMessage,
       life: 3000,
     });
   }
 
   async function logout() {
-    resetAccessToken();
-    localStorage.setItem("srsly:logged-out", "true");
     await AuthService.logout();
+    resetAccessToken();
   }
 
   return {
