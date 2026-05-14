@@ -23,7 +23,7 @@ const resolver = zodResolver(
 const auth = useAuthStore();
 const { isFormSubmitting } = storeToRefs(auth);
 
-async function onSubmit({ valid, values }) {
+async function onSubmit({ valid, values }: any) {
   if (!valid) return;
 
   const userCredentials = new UserCredentials(values.email, values.password);
