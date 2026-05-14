@@ -50,7 +50,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to) => {
-  if (to.meta.public === "/") {
+  if (to.path === "/") {
     return true;
   }
 
