@@ -1,61 +1,81 @@
 <script setup lang="ts">
-import type { PaginatedSrsProblem, Problem } from "@/shared/types";
+import type { PaginatedReviewProblem, Problem, ProblemSearchQuery } from "@/shared/types";
 import { computed, ref, watch } from "vue";
 import ReviewDialog from "./dialog/ReviewDialog.vue";
 import SearchBar from "./SearchBar.vue";
+import { useReviewStore } from "@/stores/review";
 
-const props = defineProps<{
-  problems: PaginatedSrsProblem;
-}>();
-const emit = defineEmits(["update:problems-page", "increment:progress"]);
+const props = defineProps<{ problems: PaginatedReviewProblem }>();
+const reviewStore = useReviewStore();
+
+const reviewProblems = computed(() => props.problems.content);
+const selectedProblemForReview = ref<Problem>();
+const selectedReviewProblemId = computed(() => getReviewProblemId());
 
 const showReviewDialog = ref(false);
-const selectedProblemForReview = ref<Problem>();
+
+/** Problem Search Filters */
 const activeFilter = ref("All");
 const problemSearch = ref("");
 const paginationPage = ref(0);
 
-const reviewProblems = computed(() => props.problems.content);
+/** Pagination Metadata */
 const rows = computed(() => props.problems.size);
 const totalRecords = computed(() => props.problems.totalElements);
 
-function clickReview(problem: Problem) {
+function handleClickOnReviewButton(problem: Problem) {
   selectedProblemForReview.value = problem;
   showReviewDialog.value = true;
 }
 
-function getSrsId() {
-  if (selectedProblemForReview.value) {
-    const found = reviewProblems.value.find(
-      (p) => p.problem.questionFrontendId === selectedProblemForReview.value?.questionFrontendId,
-    );
-    if (!found) throw new Error("SRS Problem Not Found.");
-
-    return found.id;
+function getReviewProblemId() {
+  if (!selectedProblemForReview.value) {
+    return -1;
   }
 
-  throw new Error("No Selected Problem Yet.");
+  const found = reviewProblems.value.find(
+    (p) => p.problem.questionFrontendId === selectedProblemForReview.value?.questionFrontendId,
+  );
+
+  if (!found) {
+    throw new Error("SRS Problem Not Found. AYO");
+  }
+
+  return found.id;
 }
 
 function handleReview() {
-  selectedProblemForReview.value = undefined; // unselect reviewed problem
-  emit("update:problems-page", 0);
-  emit("increment:progress");
+  unselectReviewedProblem();
+  reviewStore.loadReviewProblems();
+  reviewStore.incrementProgress();
 }
 
-function refetchDashboardProblems(page = 0) {
-  emit(
-    "update:problems-page",
+function unselectReviewedProblem() {
+  selectedProblemForReview.value = undefined;
+}
+
+function refreshReviewProblems(page = 0) {
+  const searchQuery: ProblemSearchQuery = {
     page,
-    activeFilter.value.toLowerCase(),
-    problemSearch.value || undefined,
-  );
+    difficulty: activeFilter.value.toLowerCase(),
+    title: problemSearch.value.trim(),
+  };
+
+  reviewStore.loadReviewProblems(searchQuery);
 }
 
 watch(paginationPage, (newVal) => {
   const newPage = newVal / 5;
-  refetchDashboardProblems(newPage);
+  refreshReviewProblems(newPage);
 });
+
+watch(showReviewDialog, (isOpen) => {
+  if (!isOpen) {
+    unselectReviewedProblem();
+  }
+});
+
+watch(selectedProblemForReview, () => console.warn(selectedReviewProblemId.value));
 </script>
 
 <template>
@@ -64,14 +84,13 @@ watch(paginationPage, (newVal) => {
     <SearchBar
       v-model:search="problemSearch"
       v-model:difficulty="activeFilter"
-      @refresh:problems="refetchDashboardProblems"
+      @refresh:problems="refreshReviewProblems"
     />
   </div>
   <div class="mt-5 space-y-2">
     <ReviewDialog
-      v-if="selectedProblemForReview"
       v-model:is-open="showReviewDialog"
-      :srs-id="getSrsId()"
+      :review-id="selectedReviewProblemId"
       @refresh:data="handleReview"
     />
     <ProblemCard
@@ -80,7 +99,7 @@ watch(paginationPage, (newVal) => {
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
       button-label="Review"
-      @click-review="clickReview"
+      @click-review="handleClickOnReviewButton"
     />
     <p v-if="reviewProblems.length === 0" class="text-center text-sm text-light">
       No problems to review today

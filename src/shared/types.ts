@@ -33,8 +33,15 @@ interface Paginated {
   numberOfElements: number;
   sort: Sort[];
 }
-export interface PaginatedSrsProblem extends Paginated {
+
+export interface PaginatedReviewProblem extends Paginated {
   content: ProblemContent[];
+}
+
+export interface ProblemSearchQuery {
+  page?: number;
+  difficulty?: string;
+  title?: string;
 }
 
 export interface PaginatedProblem extends Paginated {

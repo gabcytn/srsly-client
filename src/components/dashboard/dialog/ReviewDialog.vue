@@ -4,7 +4,7 @@ import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
 const props = defineProps<{
-  srsId: number;
+  reviewId: number;
   isFromProblemShow?: boolean;
 }>();
 
@@ -20,9 +20,11 @@ function getGradeEquivalentIdx() {
   if (selectedGrade.value === null) {
     return -1;
   }
+
   if (selectedGrade.value <= 2) {
     return 0;
   }
+
   return selectedGrade.value - 2;
 }
 
@@ -33,15 +35,14 @@ function handleClick(idx: number) {
   selectedGrade.value = idx;
 }
 
-watch(model, () => {
-  resetRating();
-});
+watch(model, resetRating);
 
 function resetRating() {
   selectedGrade.value = null;
 }
 
 async function onSubmit() {
+  ensureValidReviewId();
   if (selectedGrade.value === null) {
     toast.add({
       severity: "error",
@@ -52,17 +53,24 @@ async function onSubmit() {
     return;
   }
   isLoading.value = true;
-  await api.post(`/problems/srs/${props.srsId}`, {
+  await api.post(`/problems/srs/${props.reviewId}`, {
     grade: selectedGrade.value,
   });
   emit("refresh:data");
   isLoading.value = false;
   model.value = false;
 }
+
+function ensureValidReviewId() {
+  if (props.reviewId <= 0) {
+    throw new Error("Invalid review id.");
+  }
+}
 </script>
 
 <template>
   <Dialog v-model:visible="model" modal header="Review" class="max-w-87.5 w-[90%]">
+    <span>Review ID: {{ reviewId }}</span>
     <h1 class="mb-3">How well did you recall this?</h1>
     <div class="flex justify-center gap-1.5">
       <GradeItem
