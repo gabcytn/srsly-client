@@ -10,7 +10,9 @@ export interface JwtResponse {
   expiresAt: number;
 }
 
-export interface AuthResponse extends UserDetails, JwtResponse {}
+export interface AuthResponse extends UserDetails {
+  jwtResponse: JwtResponse;
+}
 
 interface Sort {
   direction: string;
