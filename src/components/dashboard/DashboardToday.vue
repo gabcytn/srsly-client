@@ -4,6 +4,7 @@ import { computed, ref, watch } from "vue";
 import ReviewDialog from "./dialog/ReviewDialog.vue";
 import SearchBar from "./SearchBar.vue";
 import { useReviewStore } from "@/stores/review";
+import ProblemCard from "./ProblemCard.vue";
 
 const props = defineProps<{ problems: PaginatedReviewProblem }>();
 const reviewStore = useReviewStore();
@@ -74,8 +75,6 @@ watch(showReviewDialog, (isOpen) => {
     unselectReviewedProblem();
   }
 });
-
-watch(selectedProblemForReview, () => console.warn(selectedReviewProblemId.value));
 </script>
 
 <template>
@@ -95,10 +94,10 @@ watch(selectedProblemForReview, () => console.warn(selectedReviewProblemId.value
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
-      :key="reviewProblem.problem.srsId"
+      :key="reviewProblem.problem.reviewDetail?.reviewProblemId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
-      button-label="Review"
+      is-for-review
       @click-review="handleClickOnReviewButton"
     />
     <p v-if="reviewProblems.length === 0" class="text-center text-sm text-light">

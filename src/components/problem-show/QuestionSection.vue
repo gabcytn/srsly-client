@@ -2,9 +2,9 @@
 import type { Problem } from "@/shared/types";
 import DifficultyTag from "../DifficultyTag.vue";
 import ProblemTag from "../ProblemTag.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import InitialReviewModal from "./InitialReviewModal.vue";
-import isNow from "@/utils/is-now";
+import isForReview from "@/utils/is-for-review";
 import ReviewDialog from "../dashboard/dialog/ReviewDialog.vue";
 
 const props = defineProps<{
@@ -14,11 +14,12 @@ const props = defineProps<{
 
 const initialReviewModalOpen = ref(false);
 const reviewNowModalOpen = ref(false);
-
-function reviewButtonPresent() {
-  const p = props.problem;
-  return p.isSolved && p.nextAttemptAt && isNow(p.nextAttemptAt);
-}
+const reviewButtonPresent = computed(
+  () =>
+    props.problem.isSolved &&
+    props.problem.reviewDetail &&
+    isForReview(props.problem.reviewDetail.nextAttemptAt),
+);
 </script>
 <template>
   <div class="mt-5">
@@ -38,16 +39,15 @@ function reviewButtonPresent() {
         @click="initialReviewModalOpen = true"
       />
       <Button
-        v-if="reviewButtonPresent()"
+        v-if="reviewButtonPresent"
         label="Review"
         size="small"
         @click="reviewNowModalOpen = true"
       />
       <InitialReviewModal v-if="!problem.isSolved" v-model:is-open="initialReviewModalOpen" />
       <ReviewDialog
-        v-if="problem.srsId && reviewButtonPresent()"
-        :srs-id="problem.srsId"
-        :is-from-problem-show="true"
+        v-if="problem.reviewDetail && reviewButtonPresent"
+        :review-id="problem.reviewDetail.reviewProblemId"
         @refresh:data="refreshProblem"
         v-model:is-open="reviewNowModalOpen"
       />

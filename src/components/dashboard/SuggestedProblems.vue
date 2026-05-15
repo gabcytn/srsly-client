@@ -29,7 +29,12 @@ onMounted(async () => {
     <p class="text-light text-xs">Problems solved by other users</p>
   </div>
   <div class="mt-5 mb-10 space-y-2">
-    <ProblemCard v-for="item in items" :key="item.questionFrontendId" :problem="item" />
+    <ProblemCard
+      v-for="item in items"
+      :key="item.questionFrontendId"
+      :problem="item"
+      :is-for-review="false"
+    />
     <p v-if="items.length === 0" class="text-center text-sm text-light mt-3">
       There are no other problems in store for you. Come back again tomorrow.
     </p>

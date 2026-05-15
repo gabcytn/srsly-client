@@ -1,9 +1,8 @@
 import type { InjectionKey, Ref } from "vue";
 
-export interface AuthResponse {
+export interface UserDetails {
   email: string;
   isVerified: boolean;
-  jwtResponse: JwtResponse;
 }
 
 export interface JwtResponse {
@@ -11,10 +10,7 @@ export interface JwtResponse {
   expiresAt: number;
 }
 
-export interface UserDetails {
-  email: string;
-  isVerified: boolean;
-}
+export interface AuthResponse extends UserDetails, JwtResponse {}
 
 interface Sort {
   direction: string;
@@ -35,7 +31,7 @@ interface Paginated {
 }
 
 export interface PaginatedReviewProblem extends Paginated {
-  content: ProblemContent[];
+  content: ReviewProblem[];
 }
 
 export interface ProblemSearchQuery {
@@ -53,12 +49,13 @@ export interface ReviewProgress {
   solved: number;
 }
 
-interface ProblemContent {
+type ReviewProblemStatus = "NEW" | "LEARNING" | "REVIEWING" | "MASTERED";
+
+export interface ReviewProblem {
   id: number;
-  repetitions: number;
   lastAttemptAt: string;
   nextAttemptAt: string;
-  status: "NEW" | "LEARNING" | "REVIEWING" | "MASTERED";
+  status: ReviewProblemStatus;
   problem: Problem;
 }
 
@@ -66,16 +63,24 @@ interface Tag {
   name: string;
 }
 
+export type Difficulty = "EASY" | "MEDIUM" | "HARD";
+
 export interface Problem {
   questionFrontendId: number;
   title: string;
-  content?: string | null;
-  isSolved?: boolean | null;
-  nextAttemptAt?: string | null | undefined;
-  srsId?: number | null | undefined;
-  difficulty: "Easy" | "Medium" | "Hard";
+  difficulty: Difficulty;
   topicTags: Tag[];
   url: string;
+  content?: string | null;
+  isSolved: boolean;
+  reviewDetail?: ReviewDetail;
+}
+
+interface ReviewDetail {
+  reviewProblemId: number;
+  lastAttemptAt: string; // 'YYYY-MM-DD'
+  nextAttemptAt: string; // 'YYYY-MM-DD'
+  status: ReviewProblemStatus;
 }
 
 // AI RESPONSE TYPES

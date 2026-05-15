@@ -3,10 +3,7 @@ import api from "@/api";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
-const props = defineProps<{
-  reviewId: number;
-  isFromProblemShow?: boolean;
-}>();
+const props = defineProps<{ reviewId: number }>();
 
 const emit = defineEmits(["refresh:data"]);
 const model = defineModel("isOpen", { type: Boolean, required: true });
@@ -70,7 +67,6 @@ function ensureValidReviewId() {
 
 <template>
   <Dialog v-model:visible="model" modal header="Review" class="max-w-87.5 w-[90%]">
-    <span>Review ID: {{ reviewId }}</span>
     <h1 class="mb-3">How well did you recall this?</h1>
     <div class="flex justify-center gap-1.5">
       <GradeItem
