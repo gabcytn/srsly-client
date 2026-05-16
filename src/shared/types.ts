@@ -42,8 +42,14 @@ export interface ProblemSearchQuery {
   title?: string;
 }
 
-export interface PaginatedProblem extends Paginated {
-  content: Problem[];
+interface SolvedProblem {
+  problem: ProblemSummary;
+  reviewDetails?: ReviewDetail;
+  solvedAt: string; // 'YYYY-MM-DD'
+}
+
+export interface PaginatedSolvedProblem extends Paginated {
+  content: SolvedProblem[];
 }
 
 export interface ReviewProgress {
@@ -73,7 +79,26 @@ export interface Problem {
   difficulty: Difficulty;
   topicTags: Tag[];
   url: string;
-  content?: string | null;
+  content?: string;
+  isSolved: boolean;
+  reviewDetail?: ReviewDetail;
+}
+
+export interface ProblemSummary {
+  questionFrontendId: number;
+  title: string;
+  difficulty: Difficulty;
+  topicTags: Tag[];
+  url: string;
+}
+
+export interface ProblemDetail {
+  questionFrontendId: number;
+  title: string;
+  difficulty: Difficulty;
+  topicTags: Tag[];
+  url: string;
+  content?: string;
   isSolved: boolean;
   reviewDetail?: ReviewDetail;
 }

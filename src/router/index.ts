@@ -40,6 +40,12 @@ const router = createRouter({
       component: () => import("../pages/ForgotPasswordView.vue"),
       meta: { public: true },
     },
+    {
+      path: "/problems/solved",
+      name: "solvedProblems",
+      component: () => import("../pages/SolvedProblemsView.vue"),
+      meta: { public: true },
+    },
   ],
 });
 

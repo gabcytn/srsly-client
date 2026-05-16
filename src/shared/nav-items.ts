@@ -14,13 +14,13 @@ const navItems: MenuItem[] = [
       router.push({ path: "/dashboard" });
     },
   },
-  // {
-  //   label: "All Problems",
-  //   icon: "pi pi-sliders-h",
-  //   command: () => {
-  //     router.push({ path: "/problems" });
-  //   },
-  // },
+  {
+    label: "Solved Problems",
+    icon: "pi pi-sliders-h",
+    command: () => {
+      router.push({ path: "/problems/solved" });
+    },
+  },
   // {
   //   label: "Insights",
   //   icon: "pi pi-wave-pulse",
