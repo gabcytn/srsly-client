@@ -59,19 +59,24 @@ watch(paginationPage, async (newPage) => {
             </IconField>
           </div>
         </template>
-        <Column field="problem.title" header="Title" style="width: 25%"></Column>
+        <Column field="problem.title" header="Title" sortable style="width: 25%"></Column>
         <Column field="problem.difficulty" header="Difficulty" style="width: 15%">
           <template #body="slot">
             <DifficultyTag :label="slot.data.problem.difficulty" />
           </template>
         </Column>
         <Column field="reviewDetails.status" header="Status" style="width: 15%"></Column>
-        <Column field="solvedAt" header="Solved At" style="width: 15%">
+        <Column field="solvedAt" header="Solved At" sortable style="width: 15%">
           <template #body="slot">
             <span>{{ getMonthAndDate(slot.data.solvedAt) }}</span>
           </template>
         </Column>
-        <Column field="reviewDetails.nextAttemptAt" header="Next Review" style="width: 15%">
+        <Column
+          field="reviewDetails.nextAttemptAt"
+          sortable
+          header="Next Review"
+          style="width: 15%"
+        >
           <template #body="slot">
             <span v-if="slot.data.reviewDetails">{{
               getMonthAndDate(slot.data.reviewDetails.nextAttemptAt)
