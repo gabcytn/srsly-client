@@ -5,6 +5,8 @@ import ReviewDialog from "./dialog/ReviewDialog.vue";
 import SearchBar from "./SearchBar.vue";
 import { useReviewStore } from "@/stores/review";
 import ProblemCard from "./ProblemCard.vue";
+import { Button } from "primevue";
+import router from "@/router";
 
 const props = defineProps<{ problems: PaginatedReviewProblem }>();
 const reviewStore = useReviewStore();
@@ -100,9 +102,16 @@ watch(showReviewDialog, (isOpen) => {
       is-for-review
       @click-review="handleClickOnReviewButton"
     />
-    <p v-if="reviewProblems.length === 0" class="text-center text-sm text-light">
-      No problems to review today
-    </p>
+    <div v-if="reviewProblems.length === 0" class="flex justify-center flex-col gap-y-3">
+      <p class="text-center text-sm text-light">No problems to review today</p>
+      <div class="flex justify-center">
+        <Button
+          size="small"
+          label="Solve Problems"
+          @click="router.push({ name: 'solvedProblems' })"
+        />
+      </div>
+    </div>
     <div class="flex justify-end">
       <Paginator
         :template="{
