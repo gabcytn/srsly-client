@@ -4,11 +4,13 @@ import AppLayout from "@/layouts/AppLayout.vue";
 import { FilterMatchMode } from "@primevue/core/api";
 import { useProblemsStore } from "@/stores/problems";
 import { storeToRefs } from "pinia";
-import { Column, DataTable } from "primevue";
-import { computed, onMounted, ref, watch } from "vue";
+import { Column, DataTable, InputNumber } from "primevue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import router from "@/router";
 import DifficultyTag from "@/components/DifficultyTag.vue";
 import getMonthAndDate from "@/utils/get-month-and-date";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import z from "zod";
 
 const problemsStore = useProblemsStore();
 const { isLoading, solvedProblems } = storeToRefs(problemsStore);
@@ -35,6 +37,17 @@ watch(paginationPage, async (newPage) => {
   console.warn(`page: ${page}`);
   await problemsStore.getSolved(page);
 });
+
+const resolver = zodResolver(
+  z.object({
+    problemId: z.number(),
+  }),
+);
+
+async function submitProblemSearch({ valid, values }: any) {
+  if (!valid) return;
+  router.push(`/problems/${values.problemId}`);
+}
 </script>
 
 <template>
@@ -49,8 +62,21 @@ watch(paginationPage, async (newPage) => {
         v-model:filters="filters"
         :global-filter-fields="['problem.title']"
       >
+        <template #empty>
+          <div class="p-3 text-center">No records found.</div>
+        </template>
         <template #header>
-          <div class="flex justify-end">
+          <div class="flex justify-between">
+            <Form :resolver @submit="submitProblemSearch">
+              <FormField name="problemId">
+                <IconField name="problemId">
+                  <InputIcon>
+                    <i class="pi pi-search" />
+                  </InputIcon>
+                  <InputNumber placeholder="Go to problem (ID)" />
+                </IconField>
+              </FormField>
+            </Form>
             <IconField>
               <InputIcon>
                 <i class="pi pi-search" />
