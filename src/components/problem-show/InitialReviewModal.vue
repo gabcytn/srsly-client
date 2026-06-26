@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import api from "@/api";
-import { ProblemKey, type Solution } from "@/shared/types";
+import { ProblemKey } from "@/shared/types";
+import { useReviewStore } from "@/stores/review";
 import isInFuture from "@/utils/is-in-future";
 import { Form } from "@primevue/forms";
 import { Dialog, Divider, Message, Rating, ToggleSwitch, useToast } from "primevue";
@@ -8,6 +8,7 @@ import { inject, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+const reviewStore = useReviewStore()
 const context = inject(ProblemKey);
 if (!context) {
   throw new Error("Could not resolve ProblemContext");
@@ -22,12 +23,6 @@ const repetitions = ref<number>();
 const includeSolution = ref(false);
 const isSubmitting = ref(false);
 
-type InitialReviewBody = {
-  repetitions: number;
-  lastReviewedAt?: string;
-  confidence?: string;
-  solution?: Solution;
-};
 type FormError = {
   message: string;
 };
@@ -78,7 +73,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   if (!valid) return;
   isSubmitting.value = true;
   try {
-    await submit(values);
+    await reviewStore.submitProblemReview(Number(route.params.id), values)
     includeSolution.value = false;
     model.value = false;
     toast.add({
@@ -99,32 +94,6 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
   } finally {
     isSubmitting.value = false;
   }
-}
-
-async function submit(values: any) {
-  const paramId = Number(route.params.id);
-  if (!paramId || Number.isNaN(paramId)) {
-    throw new Error("Invalid param id");
-  }
-  const confidences = ["LOW", "MEDIUM", "HIGH"] as const;
-  const body: InitialReviewBody = {
-    repetitions: values.repetitions,
-
-    ...(values.repetitions > 0 && {
-      lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
-      confidence: confidences[values.confidence - 1],
-    }),
-
-    ...(values.title &&
-      values.code && {
-        solution: {
-          title: values.title,
-          code: values.code,
-          note: values.note,
-        },
-      }),
-  };
-  await api.post(`/problems/${paramId}/solutions/initial`, body);
 }
 </script>
 

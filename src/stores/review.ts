@@ -1,5 +1,11 @@
+import api from "@/api";
 import { ReviewService } from "@/service/ReviewService";
-import type { PaginatedReviewProblem, ProblemSearchQuery, ReviewProgress } from "@/shared/types";
+import type {
+  InitialReviewBody,
+  PaginatedReviewProblem,
+  ProblemSearchQuery,
+  ReviewProgress,
+} from "@/shared/types";
 import { defineStore } from "pinia";
 import { useToast } from "primevue";
 import { computed, ref } from "vue";
@@ -57,6 +63,32 @@ export const useReviewStore = defineStore("review", () => {
     progress.value = { solved, unsolved };
   }
 
+  async function submitProblemReview(problemId: number, values: any) {
+    if (!problemId || Number.isNaN(problemId)) {
+      throw new Error("Invalid param id");
+    }
+
+    const confidences = ["LOW", "MEDIUM", "HIGH"] as const;
+    const body: InitialReviewBody = {
+      repetitions: values.repetitions,
+
+      ...(values.repetitions > 0 && {
+        lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
+        confidence: confidences[values.confidence - 1],
+      }),
+
+      ...(values.title &&
+        values.code && {
+          solution: {
+            title: values.title,
+            code: values.code,
+            note: values.note,
+          },
+        }),
+    };
+    await ReviewService.submitReview(problemId, body);
+  }
+
   return {
     isLoading,
     problems,
@@ -66,5 +98,6 @@ export const useReviewStore = defineStore("review", () => {
     initializeDashboard,
     loadReviewProblems,
     incrementProgress,
+    submitProblemReview,
   };
 });

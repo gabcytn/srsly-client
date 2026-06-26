@@ -32,6 +32,13 @@ interface Paginated {
   sort: Sort[];
 }
 
+export type InitialReviewBody = {
+  repetitions: number;
+  lastReviewedAt?: string;
+  confidence?: string;
+  solution?: Solution;
+};
+
 export interface PaginatedReviewProblem extends Paginated {
   content: ReviewProblem[];
 }
