@@ -86,7 +86,7 @@ export const useReviewStore = defineStore("review", () => {
           },
         }),
     };
-    await ReviewService.submitReview(problemId, body);
+    await ReviewService.submitReviewableProblem(problemId, body);
   }
 
   return {
