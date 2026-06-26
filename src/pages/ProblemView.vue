@@ -11,7 +11,6 @@ const isLoading = ref(false);
 const problem = ref<Problem>();
 
 async function fetchProblem() {
-  console.warn("refetching problem...");
   const data = await reqProblemFromServer();
   problem.value = data;
 }

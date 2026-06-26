@@ -34,7 +34,6 @@ onMounted(init);
 
 watch(paginationPage, async (newPage) => {
   const page = newPage / (rows.value ?? 1);
-  console.warn(`page: ${page}`);
   await problemsStore.getSolved(page);
 });
 

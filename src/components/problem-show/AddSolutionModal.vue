@@ -52,7 +52,6 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
       detail: e instanceof Error ? e.message : "Unknown error occured",
       life: 3000,
     });
-    console.error(e);
   } finally {
     isSubmitting.value = false;
   }

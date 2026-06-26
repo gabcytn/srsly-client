@@ -13,7 +13,6 @@ export const useProblemsStore = defineStore("problems", () => {
       const params = new URLSearchParams({ page: String(page) });
       const data = await ProblemService.findSolved(params);
       solvedProblems.value = data;
-      console.warn(data);
     } catch {
       // TODO: handle error
     } finally {
