@@ -3,12 +3,14 @@ import { ProblemKey } from "@/shared/types";
 import { useReviewStore } from "@/stores/review";
 import isInFuture from "@/utils/is-in-future";
 import { Form } from "@primevue/forms";
-import { Dialog, Divider, Message, Rating, ToggleSwitch, useToast } from "primevue";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { Dialog, Divider, Message, Rating, Select, ToggleSwitch, useToast } from "primevue";
 import { inject, ref } from "vue";
 import { useRoute } from "vue-router";
+import z from "zod";
 
 const route = useRoute();
-const reviewStore = useReviewStore()
+const reviewStore = useReviewStore();
 const context = inject(ProblemKey);
 if (!context) {
   throw new Error("Could not resolve ProblemContext");
@@ -23,57 +25,64 @@ const repetitions = ref<number>();
 const includeSolution = ref(false);
 const isSubmitting = ref(false);
 
-type FormError = {
-  message: string;
-};
-type ErrorResolver = {
-  repetitions: FormError[];
-  confidence: FormError[];
-  lastReviewedAt: FormError[];
-  title: FormError[];
-  code: FormError[];
-};
+const resolver = zodResolver(
+  z
+    .object({
+      repetitions: z
+        .number("This field is required.")
+        .min(0, "This field requires a non-negative integer"),
+      confidence: z.union([
+        z.object({
+          value: z.string().min(1, "Confidence is required."),
+        }),
+        z.any().refine((_) => false, { message: "Confidence is required." }),
+      ]),
+      lastReviewedAt: z.date().nullable(),
+    })
+    .superRefine((data, ctx) => {
+      if (data.repetitions === 0) {
+        return;
+      }
 
-function resolver({ values }: { values: any }) {
-  const errors: ErrorResolver = {
-    repetitions: [],
-    confidence: [],
-    lastReviewedAt: [],
-    title: [],
-    code: [],
-  };
+      if (!data.confidence) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Confidence is required.",
+          path: ["confidence"],
+        });
+      }
 
-  if (values.repetitions === null) {
-    errors.repetitions = [{ message: "Repetitions is required." }];
-  } else if (values.repetitions < 0) {
-    errors.repetitions = [{ message: "Repetitions must be non-zero" }];
-  } else if (values.repetitions > 0 && !values.confidence) {
-    errors.confidence = [{ message: "Confidence is required." }];
-  } else if (values.repetitions > 0 && !values.lastReviewedAt) {
-    errors.lastReviewedAt = [{ message: "Date is required." }];
-  } else if (isInFuture(values.lastReviewedAt)) {
-    errors.lastReviewedAt = [{ message: "Date must not be from the future." }];
-  }
+      if (!data.lastReviewedAt) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Review date is required.",
+          path: ["lastReviewedAt"],
+        });
+        return;
+      }
 
-  if (includeSolution.value) {
-    if (!values.title) {
-      errors.title = [{ message: "Title is required." }];
-    } else if (!values.code) {
-      errors.code = [{ message: "Code is required." }];
-    }
-  }
+      if (isInFuture(data.lastReviewedAt)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Review date cannot be from the future.",
+          path: ["lastReviewedAt"],
+        });
+      }
+    }),
+);
 
-  return {
-    values,
-    errors,
-  };
-}
+const selectedConfidence = ref();
+const confidenceOptions = ref([
+  { name: "Low", value: "LOW" },
+  { name: "Medium", value: "MEDIUM" },
+  { name: "High", value: "HIGH" },
+]);
 
 async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) {
   if (!valid) return;
   isSubmitting.value = true;
   try {
-    await reviewStore.submitProblemReview(Number(route.params.id), values)
+    await reviewStore.submitProblemReview(Number(route.params.id), values);
     includeSolution.value = false;
     model.value = false;
     toast.add({
@@ -100,7 +109,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
 <template>
   <Dialog v-model:visible="model" modal header="Review" class="max-w-125 w-[90%]">
     <Form v-slot="$form" :resolver @submit="onFormSubmit" class="space-y-3">
-      <div class="flex flex-col gap-2">
+      <FormField class="flex flex-col gap-2" name="repetitions">
         <label class="text-xs" for="repetitions"
           >How many times have you <strong>reviewed</strong> this problem? (<strong>NOT</strong>
           including first solve) <span class="text-red-500">*</span></label
@@ -112,33 +121,48 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
           v-model="repetitions"
           :disabled="isSubmitting"
         />
-        <Message v-if="$form.repetitions?.invalid" severity="error" size="small" variant="simple">{{
-          $form.repetitions?.error.message
-        }}</Message>
-      </div>
-      <div v-if="repetitions && repetitions > 0" class="flex flex-col gap-2">
+      </FormField>
+      <Message v-if="$form.repetitions?.invalid" severity="error" size="small" variant="simple">{{
+        $form.repetitions?.error.message
+      }}</Message>
+      <FormField
+        v-if="repetitions && repetitions > 0"
+        class="flex flex-col gap-2"
+        name="confidence"
+      >
         <label class="text-xs" for="confidence"
           >How confident are you to remember the solution the right now?
           <span class="text-red-500">*</span></label
         >
-        <Rating :stars="3" id="confidence" name="confidence" :disabled="isSubmitting" />
-        <Message v-if="$form.confidence?.invalid" severity="error" size="small" variant="simple">{{
-          $form.confidence?.error.message
-        }}</Message>
-      </div>
-      <div v-if="repetitions && repetitions > 0" class="flex flex-col gap-2">
+        <Select
+          v-model="selectedConfidence"
+          :options="confidenceOptions"
+          size="small"
+          optionLabel="name"
+          placeholder="Confidence level"
+          class="w-full"
+        />
+      </FormField>
+      <Message v-if="$form.confidence?.invalid" severity="error" size="small" variant="simple">{{
+        $form.confidence?.error.message
+      }}</Message>
+      <FormField
+        v-if="repetitions && repetitions > 0"
+        class="flex flex-col gap-2"
+        name="lastReviewedAt"
+      >
         <label class="text-xs" for="date"
           >When did you last review this problem? <span class="text-red-500">*</span></label
         >
         <DatePicker name="lastReviewedAt" size="small" :disabled="isSubmitting" />
-        <Message
-          v-if="$form.lastReviewedAt?.invalid"
-          severity="error"
-          size="small"
-          variant="simple"
-          >{{ $form.lastReviewedAt?.error.message }}</Message
-        >
-      </div>
+      </FormField>
+      <Message
+        v-if="$form.lastReviewedAt?.invalid"
+        severity="error"
+        size="small"
+        variant="simple"
+        >{{ $form.lastReviewedAt?.error.message }}</Message
+      >
 
       <Divider align="center" type="solid"
         ><span class="text-xs text-light">Solution (optional)</span></Divider

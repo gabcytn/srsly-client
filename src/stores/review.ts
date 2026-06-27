@@ -68,13 +68,12 @@ export const useReviewStore = defineStore("review", () => {
       throw new Error("Invalid param id");
     }
 
-    const confidences = ["LOW", "MEDIUM", "HIGH"] as const;
     const body: InitialReviewBody = {
       repetitions: values.repetitions,
 
       ...(values.repetitions > 0 && {
         lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
-        confidence: confidences[values.confidence - 1],
+        confidence: values.confidence.value,
       }),
 
       ...(values.title &&
