@@ -68,6 +68,7 @@ export const useReviewStore = defineStore("review", () => {
       throw new Error("Invalid param id");
     }
 
+    isLoading.value = true;
     const body: InitialReviewBody = {
       repetitions: values.repetitions,
 
@@ -85,7 +86,14 @@ export const useReviewStore = defineStore("review", () => {
           },
         }),
     };
-    await ReviewService.submitReviewableProblem(problemId, body);
+
+    try {
+      await ReviewService.submitReviewableProblem(problemId, body);
+    } catch (e: unknown) {
+      throw new Error();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   return {
