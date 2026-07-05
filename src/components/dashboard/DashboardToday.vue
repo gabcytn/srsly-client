@@ -90,7 +90,7 @@ watch(showReviewDialog, (isOpen) => {
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
-      :key="reviewProblem.problem.reviewDetail?.reviewProblemId"
+      :key="reviewProblem.problem.questionFrontendId"
       :problem="reviewProblem.problem"
       :review-date="reviewProblem.nextAttemptAt"
       is-for-review
