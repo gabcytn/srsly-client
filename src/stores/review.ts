@@ -88,9 +88,20 @@ export const useReviewStore = defineStore("review", () => {
     };
 
     try {
-      await ReviewService.submitReviewableProblem(problemId, body);
+      await ReviewService.submitInitialReviewableProblem(problemId, body);
     } catch (e: unknown) {
       throw new Error();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  async function submitSubsequentReview(problemReviewId: number, grade: number) {
+    isLoading.value = true;
+    try {
+      await ReviewService.submitProblemReview(problemReviewId, grade);
+    } catch (e: unknown) {
+      throw e;
     } finally {
       isLoading.value = false;
     }
@@ -106,5 +117,6 @@ export const useReviewStore = defineStore("review", () => {
     loadReviewProblems,
     incrementProgress,
     submitProblemReview,
+    submitSubsequentReview,
   };
 });

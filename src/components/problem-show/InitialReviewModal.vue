@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ProblemKey } from "@/shared/types";
 import { useReviewStore } from "@/stores/review";
-import isInFuture from "@/utils/is-in-future";
+import initialReviewFormResolver from "@/utils/schema/initialReviewForm";
 import { Form } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { storeToRefs } from "pinia";
 import { Dialog, Divider, Message, Select, ToggleSwitch, useToast } from "primevue";
 import { inject, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
-import z from "zod";
 
 const route = useRoute();
 const reviewStore = useReviewStore();
@@ -27,82 +26,13 @@ const initialValues = reactive({
   confidence: null,
   lastReviewedAt: null,
   includeSolution: false,
-  title: "",
-  code: "",
-  note: "",
+  title: null,
+  code: null,
+  note: null,
 });
-const resolver = zodResolver(
-  z
-    .object({
-      repetitions: z
-        .number("This field is required.")
-        .min(0, "This field requires a non-negative integer"),
-      confidence: z.union([
-        z.object({
-          value: z.string().min(1, "Confidence is required."),
-        }),
-        z.any().refine((_) => false, { message: "Confidence is required." }),
-      ]).nullable(),
-      lastReviewedAt: z.date().nullable(),
-      includeSolution: z.boolean(),
-      title: z.string().min(1, "Title is required.").nullable(),
-      code: z.string().min(1, "Code is required.").nullable(),
-      note: z.string().nullable(),
-    })
-    .superRefine((data, ctx) => {
-      if (data.repetitions === 0) {
-        return;
-      }
 
-      if (!data.confidence) {
-        console.warn(`reps; ${data.repetitions}`);
-        ctx.addIssue({
-          code: "custom",
-          message: "Confidence is required.",
-          path: ["confidence"],
-        });
-      }
+const resolver = zodResolver(initialReviewFormResolver);
 
-      if (!data.lastReviewedAt) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Review date is required.",
-          path: ["lastReviewedAt"],
-        });
-        return;
-      }
-
-      if (isInFuture(data.lastReviewedAt)) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Review date cannot be from the future.",
-          path: ["lastReviewedAt"],
-        });
-      }
-
-      if (!data.includeSolution) {
-        return;
-      }
-
-      if (!data.title) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Solution title is required.",
-          path: ["title"],
-        });
-      }
-
-      if (!data.code) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Solution code is required.",
-          path: ["code"],
-        });
-      }
-    }),
-);
-
-const selectedConfidence = ref();
 const confidenceOptions = ref([
   { name: "Low", value: "LOW" },
   { name: "Medium", value: "MEDIUM" },
@@ -136,18 +66,19 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
 <template>
   <Dialog v-model:visible="isDialogOpen" modal header="Review" class="max-w-125 w-[90%]">
     <Form v-slot="$form" :resolver @submit="onFormSubmit" :initialValues class="space-y-3">
-      <FormField class="flex flex-col gap-2" name="repetitions">
+      <FormField v-slot="$field" class="flex flex-col gap-2" name="repetitions">
         <label class="text-xs" for="repetitions"
           >How many times have you <strong>reviewed</strong> this problem? (<strong>NOT</strong>
           including first solve) <span class="text-red-500">*</span></label
         >
-        <InputNumber inputId="repetitions" name="repetitions" size="small" />
+        <InputNumber v-bind="$field" inputId="repetitions" size="small" />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+          $form.repetitions?.error.message
+        }}</Message>
       </FormField>
-      <Message v-if="$form.repetitions?.invalid" severity="error" size="small" variant="simple">{{
-        $form.repetitions?.error.message
-      }}</Message>
       <FormField
-        v-if="$form.repetitions && $form.repetitions.value > 0"
+        v-show="$form.repetitions && $form.repetitions.value > 0"
+        v-slot="$field"
         class="flex flex-col gap-2"
         name="confidence"
       >
@@ -156,34 +87,31 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
           <span class="text-red-500">*</span></label
         >
         <Select
-          v-model="selectedConfidence"
+          v-bind="$field"
           :options="confidenceOptions"
           size="small"
           optionLabel="name"
           placeholder="Confidence level"
           class="w-full"
         />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+          $form.confidence?.error.message
+        }}</Message>
       </FormField>
-      <Message v-if="$form.confidence?.invalid" severity="error" size="small" variant="simple">{{
-        $form.confidence?.error.message
-      }}</Message>
       <FormField
-        v-if="$form.repetitions && $form.repetitions.value > 0"
-        class="flex flex-col gap-2"
+        v-slot="$field"
+        v-show="$form.repetitions && $form.repetitions.value > 0"
         name="lastReviewedAt"
+        class="flex flex-col gap-2"
       >
         <label class="text-xs" for="date"
           >When did you last review this problem? <span class="text-red-500">*</span></label
         >
-        <DatePicker name="lastReviewedAt" size="small" :disabled="isLoading" />
+        <DatePicker v-bind="$field" size="small" :disabled="isLoading" />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+          $form.lastReviewedAt?.error.message
+        }}</Message>
       </FormField>
-      <Message
-        v-if="$form.lastReviewedAt?.invalid"
-        severity="error"
-        size="small"
-        variant="simple"
-        >{{ $form.lastReviewedAt?.error.message }}</Message
-      >
 
       <Divider align="center" type="solid"
         ><span class="text-xs text-light">Solution (optional)</span></Divider
@@ -195,7 +123,7 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
       </FormField>
 
       <!-- SOLUTION -->
-      <div v-if="$form.includeSolution?.value" class="space-y-3">
+      <div v-show="$form.includeSolution?.value" class="space-y-3">
         <FormField name="title">
           <label for="title" class="text-xs">Title <span class="text-red-500">*</span></label>
           <InputText id="title" type="text" class="w-full" size="small" />
