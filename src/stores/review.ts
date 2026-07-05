@@ -96,14 +96,13 @@ export const useReviewStore = defineStore("review", () => {
     }
   }
 
-  async function submitSubsequentReview(problemReviewId: number, grade: number) {
-    isLoading.value = true;
+  async function handleNonInitialProblemReview(problemReviewId: number, grade: number) {
     try {
       await ReviewService.submitProblemReview(problemReviewId, grade);
+      await loadReviewProblems()
+      incrementProgress()
     } catch (e: unknown) {
       throw e;
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -117,6 +116,6 @@ export const useReviewStore = defineStore("review", () => {
     loadReviewProblems,
     incrementProgress,
     submitProblemReview,
-    submitSubsequentReview,
+    handleNonInitialProblemReview,
   };
 });

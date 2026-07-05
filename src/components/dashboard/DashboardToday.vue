@@ -47,12 +47,6 @@ function getReviewProblemId() {
   return found.id;
 }
 
-function handleReview() {
-  unselectReviewedProblem();
-  reviewStore.loadReviewProblems();
-  reviewStore.incrementProgress();
-}
-
 function unselectReviewedProblem() {
   selectedProblemForReview.value = undefined;
 }
@@ -92,7 +86,7 @@ watch(showReviewDialog, (isOpen) => {
     <ReviewDialog
       v-model:is-open="showReviewDialog"
       :review-id="selectedReviewProblemId"
-      @refresh:data="handleReview"
+      @refresh:data="unselectReviewedProblem"
     />
     <ProblemCard
       v-for="reviewProblem in reviewProblems"
