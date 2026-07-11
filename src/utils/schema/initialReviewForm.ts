@@ -7,12 +7,7 @@ const resolver = z
       .number("This field is required.")
       .min(0, "This field requires a non-negative integer"),
     confidence: z
-      .union([
-        z.object({
-          value: z.string().min(1, "Confidence is required."),
-        }),
-        z.any().refine((_) => false, { message: "Confidence is required." }),
-      ])
+      .object({ name: z.string(), value: z.string() }, "Confidence is requireds.")
       .nullable(),
     lastReviewedAt: z
       .preprocess(
@@ -43,16 +38,16 @@ const resolver = z
     if (data.repetitions > 0 && !data.confidence) {
       ctx.addIssue({
         code: "custom",
-        message: "Review date is required.",
-        path: ["lastReviewedAt"],
+        message: "Confidence is required.",
+        path: ["confidence"],
       });
     }
 
     if (data.repetitions > 0 && !data.lastReviewedAt) {
       ctx.addIssue({
         code: "custom",
-        message: "Confidence is required.",
-        path: ["confidence"],
+        message: "Review date is required.",
+        path: ["lastReviewedAt"],
       });
     }
 
@@ -66,8 +61,8 @@ const resolver = z
 
     if (!data.includeSolution) {
       data.title = null;
-      data.code = null
-      data.note = null
+      data.code = null;
+      data.note = null;
       return;
     }
 
