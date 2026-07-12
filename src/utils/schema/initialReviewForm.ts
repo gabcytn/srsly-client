@@ -24,6 +24,7 @@ const resolver = z
         ]),
       )
       .nullable(),
+    isForReview: z.boolean(),
     includeSolution: z.boolean(),
     title: z.string().min(1, "Title is required.").nullable(),
     code: z.string().min(1, "Code is required.").nullable(),

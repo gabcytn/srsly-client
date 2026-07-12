@@ -88,7 +88,11 @@ export const useReviewStore = defineStore("review", () => {
     };
 
     try {
-      await ReviewService.submitInitialReviewableProblem(problemId, body);
+      if (values.isForReview) {
+        await ReviewService.submitInitialReviewableProblem(problemId, body);
+      } else {
+        await ReviewService.submitInitialNonReviewableProblem(problemId, body);
+      }
     } catch (e: unknown) {
       throw new Error();
     } finally {
@@ -99,8 +103,8 @@ export const useReviewStore = defineStore("review", () => {
   async function handleNonInitialProblemReview(problemReviewId: number, grade: number) {
     try {
       await ReviewService.submitProblemReview(problemReviewId, grade);
-      await loadReviewProblems()
-      incrementProgress()
+      await loadReviewProblems();
+      incrementProgress();
     } catch (e: unknown) {
       throw e;
     }

@@ -26,6 +26,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     CallToActionSection: typeof import('./src/components/landing/CallToActionSection.vue')['default']
     Card: typeof import('primevue/card')['default']
+    Checkbox: typeof import('primevue/checkbox')['default']
     ComplexityCritique: typeof import('./src/components/problem-show/ai/ComplexityCritique.vue')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     CorrectnessCritique: typeof import('./src/components/problem-show/ai/CorrectnessCritique.vue')['default']
@@ -92,5 +93,6 @@ declare module 'vue' {
   export interface GlobalDirectives {
     AnimateOnScroll: typeof import('primevue/animateonscroll')['default']
     Ripple: typeof import('primevue/ripple')['default']
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }

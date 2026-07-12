@@ -5,7 +5,7 @@ import initialReviewFormResolver from "@/utils/schema/initialReviewForm";
 import { Form } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { storeToRefs } from "pinia";
-import { Dialog, Divider, Message, Select, ToggleSwitch, useToast } from "primevue";
+import { Checkbox, Dialog, Divider, Message, Select, ToggleSwitch, useToast } from "primevue";
 import { inject, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
@@ -21,11 +21,13 @@ const { markAsSolved } = context;
 
 const toast = useToast();
 const isDialogOpen = defineModel("isOpen", { type: Boolean, required: true });
-
+const tooltipContent =
+  '<div class="font-semibold text-sm">Note</div><div class="opacity-75 text-sm mt-1">Untick this box if you don\'t intend to review this problem (i.e., only mark as solved)</div>';
 const initialValues = reactive({
   confidence: null,
   lastReviewedAt: null,
   includeSolution: false,
+  isForReview: true,
   title: null,
   code: null,
   note: null,
@@ -111,6 +113,16 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
         <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
           $form.lastReviewedAt?.error.message
         }}</Message>
+      </FormField>
+
+      <FormField v-slot="$field" name="isForReview" class="flex gap-2 items-center">
+        <Checkbox v-bind="$field" binary size="small" inputId="for_review" />
+        <label
+          for="for_review"
+          class="text-xs"
+          v-tooltip.top="{ value: tooltipContent, escape: false, class: 'w-60!' }"
+          >For Review</label
+        >
       </FormField>
 
       <Divider align="center" type="solid"
