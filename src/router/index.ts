@@ -41,10 +41,10 @@ const router = createRouter({
       meta: { public: true },
     },
     {
-      path: "/problems",
-      name: "allProblems",
-      component: () => import("../pages/AllProblemsView.vue"),
-      meta: { public: false },
+      path: "/problems/solved",
+      name: "solvedProblems",
+      component: () => import("../pages/SolvedProblemsView.vue"),
+      meta: { public: true },
     },
   ],
 });
@@ -53,21 +53,25 @@ router.beforeEach(async (to) => {
   if (to.path === "/") {
     return true;
   }
+
   const auth = useAuthStore();
-  if (!auth.isReady) {
-    await auth.init();
-  }
-  if (to.path.startsWith("/auth") && auth.isAuthenticated) {
+  await auth.init();
+
+  const isAuthenticated = auth.isAuthenticated();
+
+  if (to.path.startsWith("/auth") && isAuthenticated) {
     return "/dashboard";
   }
+
   if (to.meta.public) {
     return true;
   }
-  if (!to.meta.public && auth.isAuthenticated) {
-    return true;
+
+  if (!isAuthenticated) {
+    return "/auth/login";
   }
 
-  return "/auth/login";
+  return true;
 });
 
 export default router;

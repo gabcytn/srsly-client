@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import api from "@/api";
+import { useReviewStore } from "@/stores/review";
+import normalizeErrorMessage from "@/utils/errors/normalize-error-message";
+import { AxiosError } from "axios";
+import { storeToRefs } from "pinia";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 
-const props = defineProps<{
-  srsId: number;
-  isFromProblemShow?: boolean;
-}>();
+const props = defineProps<{ reviewId: number }>();
+
+const reviewStore = useReviewStore();
+const isFormSubmitting = ref(false);
 
 const emit = defineEmits(["refresh:data"]);
-const model = defineModel("isOpen", { type: Boolean, required: true });
-const isLoading = ref(false);
+const isDialogOpen = defineModel("isOpen", { type: Boolean, required: true });
 const toast = useToast();
 const options = ["Failed / forgotten", "Barely correct", "Correct", "Very easy"];
 const keys = ["0-2", "3", "4", "5"];
@@ -20,9 +22,11 @@ function getGradeEquivalentIdx() {
   if (selectedGrade.value === null) {
     return -1;
   }
+
   if (selectedGrade.value <= 2) {
     return 0;
   }
+
   return selectedGrade.value - 2;
 }
 
@@ -33,15 +37,14 @@ function handleClick(idx: number) {
   selectedGrade.value = idx;
 }
 
-watch(model, () => {
-  resetRating();
-});
+watch(isDialogOpen, resetRating);
 
 function resetRating() {
   selectedGrade.value = null;
 }
 
 async function onSubmit() {
+  ensureValidReviewId();
   if (selectedGrade.value === null) {
     toast.add({
       severity: "error",
@@ -51,18 +54,33 @@ async function onSubmit() {
     });
     return;
   }
-  isLoading.value = true;
-  await api.post(`/problems/srs/${props.srsId}`, {
-    grade: selectedGrade.value,
-  });
-  emit("refresh:data");
-  isLoading.value = false;
-  model.value = false;
+
+  isFormSubmitting.value = true;
+  try {
+    emit("refresh:data");
+    await reviewStore.handleNonInitialProblemReview(props.reviewId, selectedGrade.value);
+    isDialogOpen.value = false;
+  } catch (e: unknown) {
+    toast.add({
+      severity: "error",
+      summary: "Failed",
+      detail: normalizeErrorMessage(e),
+      life: 3000,
+    });
+  } finally {
+    isFormSubmitting.value = false;
+  }
+}
+
+function ensureValidReviewId() {
+  if (props.reviewId <= 0) {
+    throw new Error("Invalid review id.");
+  }
 }
 </script>
 
 <template>
-  <Dialog v-model:visible="model" modal header="Review" class="max-w-87.5 w-[90%]">
+  <Dialog v-model:visible="isDialogOpen" modal header="Review" class="max-w-87.5 w-[90%]">
     <h1 class="mb-3">How well did you recall this?</h1>
     <div class="flex justify-center gap-1.5">
       <GradeItem
@@ -96,7 +114,7 @@ async function onSubmit() {
       label="Submit Rating"
       size="small"
       @click="onSubmit"
-      :disabled="selectedGrade === null || isLoading"
+      :disabled="selectedGrade === null || isFormSubmitting"
     />
   </Dialog>
 </template>

@@ -1,79 +1,115 @@
+import { UserBasicDetails } from "@/DTO/UserBasicDetails";
+import type { UserCredentials } from "@/DTO/UserCredentials";
+import router from "@/router";
+import { AuthService } from "@/service/AuthService";
+import type { AuthResponse } from "@/shared/types";
+import { AxiosError } from "axios";
 import { defineStore } from "pinia";
+import { useToast } from "primevue";
+import { ref } from "vue";
 
-type AuthState = {
-  accessToken: string | null;
-  isReady: boolean;
-};
+export const useAuthStore = defineStore("auth", () => {
+  const toast = useToast();
+  const isInitialized = ref(false);
+  const userDetails = ref<UserBasicDetails>();
+  const accessToken = ref<string | undefined>();
+  const isFormSubmitting = ref(false);
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+  function isAuthenticated() {
+    return accessToken.value !== undefined;
+  }
 
-export const useAuthStore = defineStore("auth", {
-  state: (): AuthState => ({
-    accessToken: null,
-    isReady: false,
-  }),
-  getters: {
-    isAuthenticated(state) {
-      return state.accessToken !== null;
-    },
-  },
-  actions: {
-    async init() {
-      const didLogout = localStorage.getItem("srsly:logged-out") === "true";
-      if (didLogout) {
-        return;
-      }
-      const res = await fetch(`${SERVER_URL}/public/auth/refresh-token`, {
-        method: "POST",
-        body: JSON.stringify({ deviceName: navigator.userAgent }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
+  async function init() {
+    if (isAuthenticated() || isInitialized.value) {
+      return;
+    }
 
-      if (!res.ok) {
-        this.logout();
-        window.location.href = "/auth/login";
-        return;
-      }
+    try {
+      const data = await AuthService.refreshToken();
+      setAccessToken(data.token);
+    } catch (e: unknown) {
+      await handleInitError(e);
+    } finally {
+      isInitialized.value = true;
+    }
+  }
 
-      const data = await res.json();
-      if (data.token) {
-        this.setAccessToken(data.token);
-        this.isReady = true;
-        return;
-      }
+  async function handleInitError(e: unknown) {
+    if (e instanceof AxiosError || e instanceof Error) {
+      router.replace("/auth/login");
+      return;
+    }
 
-      throw new Error("Token not found.");
-    },
-    setAccessToken(token: string | null) {
-      this.accessToken = token;
-    },
-    async login(email: string, password: string, action = "login") {
-      const res = await fetch(`${SERVER_URL}/public/auth/${action}`, {
-        method: "POST",
-        body: JSON.stringify({ email, password, deviceName: navigator.userAgent }),
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        if (data && data.detail) throw new Error(data.detail);
-        throw new Error(`Error status code: ${res.status}`);
-      }
-      const data = await res.json();
-      this.setAccessToken(data.token);
-      localStorage.setItem("srsly:logged-out", "false");
-    },
-    async register(email: string, password: string) {
-      await this.login(email, password, "register");
-    },
-    async logout() {
-      this.setAccessToken(null);
-      localStorage.setItem("srsly:logged-out", "true");
-      await fetch(`${SERVER_URL}/public/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    },
-  },
+    throw new Error("Unknown error");
+  }
+
+  function setAccessToken(token: string) {
+    accessToken.value = token;
+  }
+
+  function getAccessToken() {
+    return accessToken.value;
+  }
+
+  function resetAccessToken() {
+    accessToken.value = undefined;
+  }
+
+  async function login(credentials: UserCredentials) {
+    try {
+      isFormSubmitting.value = true;
+      const data = await AuthService.login(credentials);
+      initializeAuthState(data);
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isFormSubmitting.value = false;
+    }
+  }
+
+  async function register(credentials: UserCredentials) {
+    try {
+      isFormSubmitting.value = true;
+      const data = await AuthService.register(credentials);
+      initializeAuthState(data);
+    } catch (e: unknown) {
+      handleError(e);
+    } finally {
+      isFormSubmitting.value = false;
+    }
+  }
+
+  function initializeAuthState(data: AuthResponse) {
+    setAccessToken(data.jwtResponse.token);
+    userDetails.value = new UserBasicDetails(data.email, data.isVerified);
+  }
+
+  function handleError(e: unknown) {
+    let errorMessage = "Unknown error occured";
+    if (e instanceof AxiosError) {
+      errorMessage = e.response?.data.detail;
+    }
+    toast.add({
+      severity: "error",
+      summary: "Authentication Failed",
+      detail: errorMessage,
+      life: 3000,
+    });
+  }
+
+  async function logout() {
+    await AuthService.logout();
+    resetAccessToken();
+  }
+
+  return {
+    isAuthenticated,
+    isFormSubmitting,
+    init,
+    setAccessToken,
+    getAccessToken,
+    register,
+    login,
+    logout,
+  };
 });

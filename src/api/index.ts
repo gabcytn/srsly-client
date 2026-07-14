@@ -1,5 +1,7 @@
+import router from "@/router";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
+import { ToastEventBus, type ToastMessageOptions } from "primevue";
 
 type FailedQueue = {
   resolve: (token: string) => void;
@@ -16,8 +18,8 @@ const api = axios.create({
 const auth = useAuthStore();
 
 api.interceptors.request.use((config) => {
-  if (auth.isAuthenticated) {
-    config.headers.Authorization = `Bearer ${auth.accessToken}`;
+  if (auth.isAuthenticated()) {
+    config.headers.Authorization = `Bearer ${auth.getAccessToken()}`;
   }
   return config;
 });
@@ -75,24 +77,24 @@ api.interceptors.response.use(
           credentials: "include",
         });
 
+        if (!res.ok && res.status === 403) {
+          throw new Error("Session expired.");
+        }
+
         const data = await res.json();
         const newToken = data.token;
         auth.setAccessToken(newToken);
         resolveQueue(newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (refreshError: unknown) {
         if (!(refreshError instanceof Error)) {
           console.error("Unknown error thrown.");
           console.error(refreshError);
           return;
         }
 
-        rejectQueue(refreshError);
-        auth.logout();
-        window.location.href = "/auth/login";
-
-        return Promise.reject(refreshError);
+        await handleRefreshError(refreshError);
       } finally {
         isRefreshing = false;
       }
@@ -101,5 +103,25 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+async function handleRefreshError(e: Error) {
+  rejectQueue(e);
+  showToastError();
+  await auth.logout();
+  router.replace("/auth/login");
+}
+
+function showToastError() {
+  const toast = {
+    add: (message: ToastMessageOptions) => ToastEventBus.emit("add", message),
+  };
+
+  toast.add({
+    severity: "error",
+    summary: "Session expired",
+    detail: "Please log in again.",
+    life: 3000,
+  });
+}
 
 export default api;

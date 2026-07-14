@@ -10,8 +10,8 @@ import router from "@/router";
 
 const props = defineProps<{
   problem: Problem;
-  reviewDate?: string | null;
-  buttonLabel?: string | null;
+  reviewDate?: string;
+  isForReview: boolean;
 }>();
 
 defineEmits(["clickReview"]);
@@ -75,8 +75,8 @@ function toggle(event: Event) {
     >
     <div class="flex items-center gap-1">
       <Button
-        v-if="buttonLabel"
-        :label="buttonLabel"
+        v-if="isForReview"
+        label="Review"
         size="small"
         @click="$emit('clickReview', problem)"
       />

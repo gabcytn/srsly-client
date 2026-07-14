@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import api from "@/api";
-import { ProblemKey, type Solution } from "@/shared/types";
-import isInFuture from "@/utils/is-in-future";
+import { ProblemKey } from "@/shared/types";
+import { useReviewStore } from "@/stores/review";
+import initialReviewFormResolver from "@/utils/schema/initialReviewForm";
 import { Form } from "@primevue/forms";
-import { Dialog, Divider, Message, Rating, ToggleSwitch, useToast } from "primevue";
-import { inject, ref } from "vue";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { storeToRefs } from "pinia";
+import { Checkbox, Dialog, Divider, Message, Select, ToggleSwitch, useToast } from "primevue";
+import { inject, reactive, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
+const reviewStore = useReviewStore();
+const { isLoading } = storeToRefs(reviewStore);
 const context = inject(ProblemKey);
 if (!context) {
   throw new Error("Could not resolve ProblemContext");
@@ -16,71 +20,32 @@ if (!context) {
 const { markAsSolved } = context;
 
 const toast = useToast();
-const model = defineModel("isOpen", { type: Boolean, required: true });
+const isDialogOpen = defineModel("isOpen", { type: Boolean, required: true });
+const tooltipContent =
+  '<div class="font-semibold text-sm">Note</div><div class="opacity-75 text-sm mt-1">Untick this box if you don\'t intend to review this problem (i.e., only mark as solved)</div>';
+const initialValues = reactive({
+  confidence: null,
+  lastReviewedAt: null,
+  includeSolution: false,
+  isForReview: true,
+  title: null,
+  code: null,
+  note: null,
+});
 
-const repetitions = ref<number>();
-const includeSolution = ref(false);
-const isSubmitting = ref(false);
+const resolver = zodResolver(initialReviewFormResolver);
 
-type InitialReviewBody = {
-  repetitions: number;
-  lastReviewedAt?: string;
-  confidence?: string;
-  solution?: Solution;
-};
-type FormError = {
-  message: string;
-};
-type ErrorResolver = {
-  repetitions: FormError[];
-  confidence: FormError[];
-  lastReviewedAt: FormError[];
-  title: FormError[];
-  code: FormError[];
-};
-
-function resolver({ values }: { values: any }) {
-  const errors: ErrorResolver = {
-    repetitions: [],
-    confidence: [],
-    lastReviewedAt: [],
-    title: [],
-    code: [],
-  };
-
-  if (values.repetitions === null) {
-    errors.repetitions = [{ message: "Repetitions is required." }];
-  } else if (values.repetitions < 0) {
-    errors.repetitions = [{ message: "Repetitions must be non-zero" }];
-  } else if (values.repetitions > 0 && !values.confidence) {
-    errors.confidence = [{ message: "Confidence is required." }];
-  } else if (values.repetitions > 0 && !values.lastReviewedAt) {
-    errors.lastReviewedAt = [{ message: "Date is required." }];
-  } else if (isInFuture(values.lastReviewedAt)) {
-    errors.lastReviewedAt = [{ message: "Date must not be from the future." }];
-  }
-
-  if (includeSolution.value) {
-    if (!values.title) {
-      errors.title = [{ message: "Title is required." }];
-    } else if (!values.code) {
-      errors.code = [{ message: "Code is required." }];
-    }
-  }
-
-  return {
-    values,
-    errors,
-  };
-}
+const confidenceOptions = ref([
+  { name: "Low", value: "LOW" },
+  { name: "Medium", value: "MEDIUM" },
+  { name: "High", value: "HIGH" },
+]);
 
 async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) {
   if (!valid) return;
-  isSubmitting.value = true;
   try {
-    await submit(values);
-    includeSolution.value = false;
-    model.value = false;
+    await reviewStore.submitProblemReview(Number(route.params.id), values);
+    isDialogOpen.value = false;
     toast.add({
       severity: "success",
       summary: "Form is submitted",
@@ -96,117 +61,91 @@ async function onFormSubmit({ valid, values }: { valid: boolean; values: any }) 
         life: 3000,
       });
     }
-  } finally {
-    isSubmitting.value = false;
   }
-}
-
-async function submit(values: any) {
-  const paramId = Number(route.params.id);
-  if (!paramId || Number.isNaN(paramId)) {
-    throw new Error("Invalid param id");
-  }
-  const confidences = ["LOW", "MEDIUM", "HIGH"] as const;
-  const body: InitialReviewBody = {
-    repetitions: values.repetitions,
-
-    ...(values.repetitions > 0 && {
-      lastReviewedAt: new Date(values.lastReviewedAt).toLocaleDateString("en-CA"),
-      confidence: confidences[values.confidence - 1],
-    }),
-
-    ...(values.title &&
-      values.code && {
-        solution: {
-          title: values.title,
-          code: values.code,
-          note: values.note,
-        },
-      }),
-  };
-  await api.post(`/problems/${paramId}/solutions/initial`, body);
 }
 </script>
 
 <template>
-  <Dialog v-model:visible="model" modal header="Review" class="max-w-125 w-[90%]">
-    <Form v-slot="$form" :resolver @submit="onFormSubmit" class="space-y-3">
-      <div class="flex flex-col gap-2">
+  <Dialog v-model:visible="isDialogOpen" modal header="Review" class="max-w-125 w-[90%]">
+    <Form v-slot="$form" :resolver @submit="onFormSubmit" :initialValues class="space-y-3">
+      <FormField v-slot="$field" class="flex flex-col gap-2" name="repetitions">
         <label class="text-xs" for="repetitions"
           >How many times have you <strong>reviewed</strong> this problem? (<strong>NOT</strong>
           including first solve) <span class="text-red-500">*</span></label
         >
-        <InputNumber
-          inputId="repetitions"
-          name="repetitions"
-          size="small"
-          v-model="repetitions"
-          :disabled="isSubmitting"
-        />
-        <Message v-if="$form.repetitions?.invalid" severity="error" size="small" variant="simple">{{
+        <InputNumber v-bind="$field" inputId="repetitions" size="small" />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
           $form.repetitions?.error.message
         }}</Message>
-      </div>
-      <div v-if="repetitions && repetitions > 0" class="flex flex-col gap-2">
+      </FormField>
+      <FormField
+        v-show="$form.repetitions && $form.repetitions.value > 0"
+        v-slot="$field"
+        class="flex flex-col gap-2"
+        name="confidence"
+      >
         <label class="text-xs" for="confidence"
           >How confident are you to remember the solution the right now?
           <span class="text-red-500">*</span></label
         >
-        <Rating :stars="3" id="confidence" name="confidence" :disabled="isSubmitting" />
-        <Message v-if="$form.confidence?.invalid" severity="error" size="small" variant="simple">{{
+        <Select
+          v-bind="$field"
+          :options="confidenceOptions"
+          size="small"
+          optionLabel="name"
+          placeholder="Confidence level"
+          class="w-full"
+        />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
           $form.confidence?.error.message
         }}</Message>
-      </div>
-      <div v-if="repetitions && repetitions > 0" class="flex flex-col gap-2">
+      </FormField>
+      <FormField
+        v-slot="$field"
+        v-show="$form.repetitions && $form.repetitions.value > 0"
+        name="lastReviewedAt"
+        class="flex flex-col gap-2"
+      >
         <label class="text-xs" for="date"
           >When did you last review this problem? <span class="text-red-500">*</span></label
         >
-        <DatePicker name="lastReviewedAt" size="small" :disabled="isSubmitting" />
-        <Message
-          v-if="$form.lastReviewedAt?.invalid"
-          severity="error"
-          size="small"
-          variant="simple"
-          >{{ $form.lastReviewedAt?.error.message }}</Message
+        <DatePicker v-bind="$field" size="small" :disabled="isLoading" />
+        <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{
+          $form.lastReviewedAt?.error.message
+        }}</Message>
+      </FormField>
+
+      <FormField v-slot="$field" name="isForReview" class="flex gap-2 items-center">
+        <Checkbox v-bind="$field" binary size="small" inputId="for_review" />
+        <label
+          for="for_review"
+          class="text-xs"
+          v-tooltip.top="{ value: tooltipContent, escape: false, class: 'w-60!' }"
+          >For Review</label
         >
-      </div>
+      </FormField>
 
       <Divider align="center" type="solid"
         ><span class="text-xs text-light">Solution (optional)</span></Divider
       >
 
-      <div class="flex items-center gap-2">
-        <ToggleSwitch v-model="includeSolution" name="" />
+      <FormField name="includeSolution" class="flex items-center gap-2">
+        <ToggleSwitch />
         <span class="text-xs text-light">Include your solution</span>
-      </div>
+      </FormField>
 
       <!-- SOLUTION -->
-      <div v-if="includeSolution" class="space-y-3">
-        <div class="">
+      <div v-show="$form.includeSolution?.value" class="space-y-3">
+        <FormField name="title">
           <label for="title" class="text-xs">Title <span class="text-red-500">*</span></label>
-          <InputText
-            id="title"
-            name="title"
-            type="text"
-            class="w-full"
-            size="small"
-            :disabled="isSubmitting"
-          />
+          <InputText id="title" type="text" class="w-full" size="small" />
           <Message v-if="$form.title?.invalid" severity="error" size="small" variant="simple">
             <span class="text-xs">{{ $form.title.error?.message }}</span>
           </Message>
-        </div>
-        <div>
+        </FormField>
+        <FormField name="code">
           <label for="code" class="text-xs">Code <span class="text-red-500">*</span></label>
-          <Textarea
-            id="code"
-            name="code"
-            rows="8"
-            class="w-full"
-            size="small"
-            style="resize: none"
-            :disabled="isSubmitting"
-          />
+          <Textarea id="code" rows="8" class="w-full" size="small" style="resize: none" />
           <Message
             v-if="$form.code?.invalid"
             severity="error"
@@ -216,19 +155,11 @@ async function submit(values: any) {
           >
             <span class="text-xs">{{ $form.code.error?.message }}</span>
           </Message>
-        </div>
-        <div>
+        </FormField>
+        <FormField name="note">
           <label for="note" class="text-xs">Note (optional)</label>
-          <Textarea
-            id="note"
-            name="note"
-            rows="3"
-            class="w-full"
-            size="small"
-            style="resize: none"
-            :disabled="isSubmitting"
-          />
-        </div>
+          <Textarea id="note" rows="3" class="w-full" size="small" style="resize: none" />
+        </FormField>
       </div>
 
       <div>
@@ -237,7 +168,7 @@ async function submit(values: any) {
           label="Submit"
           type="submit"
           class="w-full my-3"
-          :disabled="isSubmitting"
+          :disabled="isLoading"
         />
       </div>
     </Form>

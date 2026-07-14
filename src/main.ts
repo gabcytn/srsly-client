@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
+import Tooltip from "primevue/tooltip"
 import router from "./router";
 import { definePreset } from "@primeuix/themes";
 import { createPinia } from "pinia";
@@ -61,6 +62,7 @@ app.use(ConfirmationService);
 app.use(pinia);
 app.use(router);
 app.use(hljsVuePlugin);
+app.directive("tooltip", Tooltip)
 app.directive("animateonscroll", AnimateOnScroll);
 
 app.mount("#app");

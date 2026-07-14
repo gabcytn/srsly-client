@@ -37,8 +37,6 @@ async function createSolution(solution: Solution) {
     code: solution.code,
     note: solution.note,
   })) as Solution;
-  console.log("s");
-  console.log(s);
   const existingSolutions = solutions.value;
   existingSolutions.push(s);
   solutions.value = existingSolutions;

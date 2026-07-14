@@ -7,7 +7,7 @@ export default function (toCompare: string) {
     throw new Error("Invalid date.");
   }
 
-  return today.getTime() === getYearMonthDate(dateToCompare).getTime();
+  return today.getTime() >= getYearMonthDate(dateToCompare).getTime();
 }
 
 function getYearMonthDate(date: Date): Date {

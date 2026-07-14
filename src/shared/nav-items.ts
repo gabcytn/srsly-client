@@ -15,10 +15,10 @@ const navItems: MenuItem[] = [
     },
   },
   {
-    label: "All Problems",
+    label: "Solved Problems",
     icon: "pi pi-sliders-h",
     command: () => {
-      router.push({ path: "/problems" });
+      router.push({ path: "/problems/solved" });
     },
   },
   // {
@@ -41,9 +41,9 @@ const navItems: MenuItem[] = [
   {
     label: "Logout",
     icon: "pi pi-sign-out",
-    command: () => {
-      auth.logout();
-      router.push({ path: "/auth/login", replace: true });
+    command: async () => {
+      await auth.logout();
+      router.replace("/auth/login");
     },
   },
 ];

@@ -26,6 +26,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     CallToActionSection: typeof import('./src/components/landing/CallToActionSection.vue')['default']
     Card: typeof import('primevue/card')['default']
+    Checkbox: typeof import('primevue/checkbox')['default']
     ComplexityCritique: typeof import('./src/components/problem-show/ai/ComplexityCritique.vue')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     CorrectnessCritique: typeof import('./src/components/problem-show/ai/CorrectnessCritique.vue')['default']
@@ -43,6 +44,7 @@ declare module 'vue' {
     FloatLabel: typeof import('primevue/floatlabel')['default']
     FooterSection: typeof import('./src/components/landing/FooterSection.vue')['default']
     Form: typeof import('@primevue/forms/form')['default']
+    FormField: typeof import('@primevue/forms/formfield')['default']
     GradeItem: typeof import('./src/components/dashboard/dialog/GradeItem.vue')['default']
     HeaderNav: typeof import('./src/components/HeaderNav.vue')['default']
     HeroSection: typeof import('./src/components/landing/HeroSection.vue')['default']
@@ -68,6 +70,7 @@ declare module 'vue' {
     QuestionSection: typeof import('./src/components/problem-show/QuestionSection.vue')['default']
     ReadabilityCritique: typeof import('./src/components/problem-show/ai/ReadabilityCritique.vue')['default']
     ReviewDialog: typeof import('./src/components/dashboard/dialog/ReviewDialog.vue')['default']
+    ReviewProblemCard: typeof import('./src/components/dashboard/ReviewProblemCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollTop: typeof import('primevue/scrolltop')['default']
@@ -90,5 +93,6 @@ declare module 'vue' {
   export interface GlobalDirectives {
     AnimateOnScroll: typeof import('primevue/animateonscroll')['default']
     Ripple: typeof import('primevue/ripple')['default']
+    Tooltip: typeof import('primevue/tooltip')['default']
   }
 }
