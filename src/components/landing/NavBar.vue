@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useAuthStore } from "@/stores/auth";
 import type { MenuItem } from "primevue/menuitem";
+import Logo from "../Logo.vue";
 
 const auth = useAuthStore();
 const items: MenuItem[] = [
@@ -28,8 +29,8 @@ const items: MenuItem[] = [
     <Menubar :model="items" class="mb-4">
       <template #start>
         <router-link to="/" class="font-jetbrains-mono font-bold text-xl py-5"
-          ><span class="text-primary font-jetbrains-mono">srs</span>ly</router-link
-        >
+          ><Logo
+        /></router-link>
       </template>
       <template #item="{ item, props }">
         <a v-ripple class="flex items-center" v-bind="props.action" :href="item.url">
