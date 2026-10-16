@@ -43,7 +43,7 @@ const navItems: MenuItem[] = [
     icon: "pi pi-sign-out",
     command: async () => {
       await auth.logout();
-      router.replace("/auth/login");
+      router.replace("/");
     },
   },
 ];

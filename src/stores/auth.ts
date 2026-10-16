@@ -15,6 +15,16 @@ export const useAuthStore = defineStore("auth", () => {
   const accessToken = ref<string | undefined>();
   const isFormSubmitting = ref(false);
 
+  const isSignInModalOpen = ref(false);
+
+  function openSignInModal() {
+    isSignInModalOpen.value = true;
+  }
+
+  function toggleSignInModal() {
+    isSignInModalOpen.value = !isSignInModalOpen.value;
+  }
+
   function isAuthenticated() {
     return accessToken.value !== undefined;
   }
@@ -35,12 +45,9 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function handleInitError(e: unknown) {
-    if (e instanceof AxiosError || e instanceof Error) {
-      router.replace("/auth/login");
-      return;
+    if (!(e instanceof AxiosError) && !(e instanceof Error)) {
+      throw new Error("Unknown error");
     }
-
-    throw new Error("Unknown error");
   }
 
   function setAccessToken(token: string) {
@@ -111,5 +118,8 @@ export const useAuthStore = defineStore("auth", () => {
     register,
     login,
     logout,
+    openSignInModal,
+    toggleSignInModal,
+    isSignInModalOpen,
   };
 });

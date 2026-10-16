@@ -80,6 +80,8 @@ declare module 'vue' {
     SearchFilter: typeof import('./src/components/dashboard/SearchFilter.vue')['default']
     SidebarDrawer: typeof import('./src/components/SidebarDrawer.vue')['default']
     SidebarNav: typeof import('./src/components/SidebarNav.vue')['default']
+    SignInDialog: typeof import('./src/components/auth/SignInDialog.vue')['default']
+    SignInModal: typeof import('./src/components/auth/SignInModal.vue')['default']
     Skeleton: typeof import('primevue/skeleton')['default']
     SkeletonLoader: typeof import('./src/components/problem-show/SkeletonLoader.vue')['default']
     SolutionContent: typeof import('./src/components/problem-show/SolutionContent.vue')['default']
