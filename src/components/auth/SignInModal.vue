@@ -23,7 +23,6 @@ function navigateToGitHub() {
 
 <template>
   <Dialog v-model:visible="isSignInModalOpen" modal header="Sign In" class="max-w-125 w-[90%]">
-    <!-- <h4 class="text-xs text-primary">WELCOME BACK</h4> -->
     <h1 class="font-cormorant-garamond text-4xl">Welcome to srsly!</h1>
     <span class="text-sm my-2 block">Start remembering. Your reviews are waiting.</span>
     <div class="flex flex-col gap-2 mt-5">

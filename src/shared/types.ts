@@ -2,7 +2,6 @@ import type { InjectionKey, Ref } from "vue";
 
 export interface UserDetails {
   email: string;
-  isVerified: boolean;
 }
 
 export interface JwtResponse {

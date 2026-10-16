@@ -3,22 +3,9 @@ import type { UserCredentials } from "@/DTO/UserCredentials";
 import type { AuthResponse, JwtResponse } from "@/shared/types";
 
 export const AuthService = {
-  login: async (credentials: UserCredentials) => {
-    const [email, password] = [credentials.getEmail(), credentials.getPassword()];
-    const data = (await api.post(`/public/auth/login`, {
-      email,
-      password,
-      deviceName: navigator.userAgent,
-    })) as AuthResponse;
-
-    return data;
-  },
-  register: async (credentials: UserCredentials) => {
-    const [email, password] = [credentials.getEmail(), credentials.getPassword()];
-    const data = (await api.post(`/public/auth/register`, {
-      email,
-      password,
-      deviceName: navigator.userAgent,
+  continueWithGithub: async (code: string) => {
+    const data = (await api.post(`/public/auth/oauth/callback/github`, {
+      code,
     })) as AuthResponse;
 
     return data;

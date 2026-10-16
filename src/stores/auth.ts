@@ -62,33 +62,19 @@ export const useAuthStore = defineStore("auth", () => {
     accessToken.value = undefined;
   }
 
-  async function login(credentials: UserCredentials) {
+  async function continueWithGithub(code: string) {
     try {
       isFormSubmitting.value = true;
-      const data = await AuthService.login(credentials);
+      const data = await AuthService.continueWithGithub(code);
       initializeAuthState(data);
     } catch (e: unknown) {
       handleError(e);
-    } finally {
-      isFormSubmitting.value = false;
-    }
-  }
-
-  async function register(credentials: UserCredentials) {
-    try {
-      isFormSubmitting.value = true;
-      const data = await AuthService.register(credentials);
-      initializeAuthState(data);
-    } catch (e: unknown) {
-      handleError(e);
-    } finally {
-      isFormSubmitting.value = false;
     }
   }
 
   function initializeAuthState(data: AuthResponse) {
     setAccessToken(data.jwtResponse.token);
-    userDetails.value = new UserBasicDetails(data.email, data.isVerified);
+    userDetails.value = new UserBasicDetails(data.email);
   }
 
   function handleError(e: unknown) {
@@ -115,8 +101,7 @@ export const useAuthStore = defineStore("auth", () => {
     init,
     setAccessToken,
     getAccessToken,
-    register,
-    login,
+    continueWithGithub,
     logout,
     openSignInModal,
     toggleSignInModal,
