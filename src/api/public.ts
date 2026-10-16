@@ -21,6 +21,8 @@ api.interceptors.response.use(
         life: 3000,
       });
     }
+
+    return Promise.reject(error);
   },
 );
 
