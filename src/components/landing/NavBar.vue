@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { useAuthStore } from "@/stores/auth";
 import type { MenuItem } from "primevue/menuitem";
 import Logo from "../Logo.vue";
 
-const auth = useAuthStore();
 const items: MenuItem[] = [
   {
     label: "Features",
@@ -18,8 +16,8 @@ const items: MenuItem[] = [
     url: "#audience",
   },
   {
-    label: auth.isAuthenticated() ? "Dashboard" : "Sign In",
-    url: auth.isAuthenticated() ? "/dashboard" : "/auth/login",
+    label: "Start Reviewing",
+    url: "/dashboard",
   },
 ];
 </script>

@@ -1,6 +1,3 @@
 export class UserBasicDetails {
-  constructor(
-    public readonly email: string,
-    public readonly isVerified: boolean,
-  ) {}
+  constructor(public readonly email: string) {}
 }

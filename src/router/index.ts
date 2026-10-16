@@ -11,6 +11,12 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/auth/oauth/github/callback",
+      name: "githubCallback",
+      component: () => import("../pages/OauthCallback.vue"),
+      meta: { public: true },
+    },
+    {
       path: "/dashboard",
       name: "dashboard",
       component: () => import("../pages/DashboardView.vue"),
@@ -23,27 +29,15 @@ const router = createRouter({
       meta: { public: false },
     },
     {
-      path: "/auth/login",
-      name: "login",
-      component: () => import("../pages/LoginView.vue"),
-      meta: { public: true },
-    },
-    {
-      path: "/auth/register",
-      name: "register",
-      component: () => import("../pages/RegisterView.vue"),
-      meta: { public: true },
-    },
-    {
-      path: "/auth/forgot-password",
-      name: "forgot-password",
-      component: () => import("../pages/ForgotPasswordView.vue"),
-      meta: { public: true },
-    },
-    {
       path: "/problems/solved",
       name: "solvedProblems",
       component: () => import("../pages/SolvedProblemsView.vue"),
+      meta: { public: true },
+    },
+    {
+      path: "/:catchAll(.*)*",
+      name: "notFound",
+      component: () => import("../pages/NotFoundView.vue"),
       meta: { public: true },
     },
   ],
@@ -68,7 +62,8 @@ router.beforeEach(async (to) => {
   }
 
   if (!isAuthenticated) {
-    return "/auth/login";
+    auth.openSignInModal()
+    return "/";
   }
 
   return true;

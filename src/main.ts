@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import PrimeVue from "primevue/config";
 import Aura from "@primeuix/themes/aura";
-import Tooltip from "primevue/tooltip"
+import Tooltip from "primevue/tooltip";
 import router from "./router";
 import { definePreset } from "@primeuix/themes";
 import { createPinia } from "pinia";
@@ -12,6 +12,9 @@ import ConfirmationService from "primevue/confirmationservice";
 import "highlight.js/styles/stackoverflow-dark.css";
 import "highlight.js/lib/common";
 import hljsVuePlugin from "@highlightjs/vue-plugin";
+import vue3GoogleLogin from "vue3-google-login";
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -62,7 +65,9 @@ app.use(ConfirmationService);
 app.use(pinia);
 app.use(router);
 app.use(hljsVuePlugin);
-app.directive("tooltip", Tooltip)
+app.directive("tooltip", Tooltip);
 app.directive("animateonscroll", AnimateOnScroll);
-
+app.use(vue3GoogleLogin, {
+  clientId: GOOGLE_CLIENT_ID,
+});
 app.mount("#app");

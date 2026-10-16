@@ -15,6 +15,16 @@ export const useAuthStore = defineStore("auth", () => {
   const accessToken = ref<string | undefined>();
   const isFormSubmitting = ref(false);
 
+  const isSignInModalOpen = ref(false);
+
+  function openSignInModal() {
+    isSignInModalOpen.value = true;
+  }
+
+  function toggleSignInModal() {
+    isSignInModalOpen.value = !isSignInModalOpen.value;
+  }
+
   function isAuthenticated() {
     return accessToken.value !== undefined;
   }
@@ -35,12 +45,9 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function handleInitError(e: unknown) {
-    if (e instanceof AxiosError || e instanceof Error) {
-      router.replace("/auth/login");
-      return;
+    if (!(e instanceof AxiosError) && !(e instanceof Error)) {
+      throw new Error("Unknown error");
     }
-
-    throw new Error("Unknown error");
   }
 
   function setAccessToken(token: string) {
@@ -55,33 +62,29 @@ export const useAuthStore = defineStore("auth", () => {
     accessToken.value = undefined;
   }
 
-  async function login(credentials: UserCredentials) {
+  async function continueWithGithub(code: string) {
     try {
       isFormSubmitting.value = true;
-      const data = await AuthService.login(credentials);
+      const data = await AuthService.continueWithGithub(code);
       initializeAuthState(data);
     } catch (e: unknown) {
       handleError(e);
-    } finally {
-      isFormSubmitting.value = false;
     }
   }
 
-  async function register(credentials: UserCredentials) {
+  async function continueWithGoogle(code: string) {
     try {
       isFormSubmitting.value = true;
-      const data = await AuthService.register(credentials);
+      const data = await AuthService.continueWithGoogle(code);
       initializeAuthState(data);
     } catch (e: unknown) {
       handleError(e);
-    } finally {
-      isFormSubmitting.value = false;
     }
   }
 
   function initializeAuthState(data: AuthResponse) {
     setAccessToken(data.jwtResponse.token);
-    userDetails.value = new UserBasicDetails(data.email, data.isVerified);
+    userDetails.value = new UserBasicDetails(data.email);
   }
 
   function handleError(e: unknown) {
@@ -93,7 +96,7 @@ export const useAuthStore = defineStore("auth", () => {
       severity: "error",
       summary: "Authentication Failed",
       detail: errorMessage,
-      life: 3000,
+      life: 10000,
     });
   }
 
@@ -108,8 +111,11 @@ export const useAuthStore = defineStore("auth", () => {
     init,
     setAccessToken,
     getAccessToken,
-    register,
-    login,
+    continueWithGithub,
+    continueWithGoogle,
     logout,
+    openSignInModal,
+    toggleSignInModal,
+    isSignInModalOpen,
   };
 });

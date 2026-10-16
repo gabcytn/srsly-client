@@ -108,7 +108,7 @@ async function handleRefreshError(e: Error) {
   rejectQueue(e);
   showToastError();
   await auth.logout();
-  router.replace("/auth/login");
+  router.replace("/");
 }
 
 function showToastError() {
