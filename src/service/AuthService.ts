@@ -10,6 +10,13 @@ export const AuthService = {
 
     return data;
   },
+  continueWithGoogle: async (code: string) => {
+    const data = (await api.post(`/public/auth/oauth/callback/google`, {
+      code,
+    })) as AuthResponse;
+
+    return data;
+  },
   refreshToken: async () => {
     const data = (await api.post("/public/auth/refresh-token", {
       deviceName: navigator.userAgent,

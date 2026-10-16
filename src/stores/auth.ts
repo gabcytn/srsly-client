@@ -72,6 +72,16 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
+  async function continueWithGoogle(code: string) {
+    try {
+      isFormSubmitting.value = true;
+      const data = await AuthService.continueWithGoogle(code);
+      initializeAuthState(data);
+    } catch (e: unknown) {
+      handleError(e);
+    }
+  }
+
   function initializeAuthState(data: AuthResponse) {
     setAccessToken(data.jwtResponse.token);
     userDetails.value = new UserBasicDetails(data.email);
@@ -86,7 +96,7 @@ export const useAuthStore = defineStore("auth", () => {
       severity: "error",
       summary: "Authentication Failed",
       detail: errorMessage,
-      life: 3000,
+      life: 10000,
     });
   }
 
@@ -102,6 +112,7 @@ export const useAuthStore = defineStore("auth", () => {
     setAccessToken,
     getAccessToken,
     continueWithGithub,
+    continueWithGoogle,
     logout,
     openSignInModal,
     toggleSignInModal,

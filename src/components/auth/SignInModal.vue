@@ -1,18 +1,34 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
-import { Dialog } from "primevue";
+import { Dialog, useToast } from "primevue";
 import { GoogleLogin } from "vue3-google-login";
 import Google from "@primeicons/vue/google";
 import GitHub from "@primeicons/vue/github";
+import router from "@/router";
 const authStore = useAuthStore();
 const { isSignInModalOpen } = storeToRefs(authStore);
 
 const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 const REDIRECT_URI = `${window.location.origin}/auth/oauth/github/callback`;
 
-function googleCallback(response: any) {
-  console.log(response);
+const toast = useToast();
+
+async function googleCallback(response: any) {
+  const code = response.code;
+  if (!code) {
+    toast.add({
+      severity: "error",
+      summary: "An error occured",
+      detail: "Code not found. Try again.",
+      life: 3000,
+    });
+    throw new Error("Code not found.");
+  }
+
+  await authStore.continueWithGoogle(code);
+
+  router.push("/dashboard");
 }
 
 function navigateToGitHub() {
