@@ -12,6 +12,7 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import isNumeric from "@/utils/is-numeric";
 import ReviewStatus from "@/components/solved-problem/ReviewStatus.vue";
+// import NextReviewDate from "@/components/solved-problem/NextReviewDate.vue";
 
 const problemsStore = useProblemsStore();
 const { isLoading, solvedProblems } = storeToRefs(problemsStore);
@@ -148,15 +149,14 @@ onMounted(async () => {
           style="width: 15%"
         >
           <template #body="slot">
-            <span>{{
-              slot.data.reviewDetails ? getMonthAndDate(slot.data.reviewDetails.nextAttemptAt) : "-"
-            }}</span>
+            <NextReviewDate :date="slot.data.reviewDetails?.nextAttemptAt" />
           </template>
         </Column>
         <Column style="width: 15%">
           <template #body="slot">
             <Button
               icon="pi pi-eye"
+              severity="secondary"
               variant="outlined"
               rounded
               class="mr-2"
@@ -166,7 +166,7 @@ onMounted(async () => {
             <a :href="slot.data.problem.url" target="_blank">
               <Button
                 icon="pi pi-external-link"
-                severity="info"
+                severity="secondary"
                 variant="outlined"
                 size="small"
                 rounded

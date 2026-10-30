@@ -61,6 +61,7 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     MiniCard: typeof import('./src/components/problem-show/ai/MiniCard.vue')['default']
     NavBar: typeof import('./src/components/landing/NavBar.vue')['default']
+    NextReviewDate: typeof import('./src/components/solved-problem/NextReviewDate.vue')['default']
     OauthOption: typeof import('./src/components/auth/OauthOption.vue')['default']
     Paginator: typeof import('primevue/paginator')['default']
     Password: typeof import('primevue/password')['default']
