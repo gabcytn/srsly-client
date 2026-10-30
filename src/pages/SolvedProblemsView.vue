@@ -11,6 +11,7 @@ import getMonthAndDate from "@/utils/get-month-and-date";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import isNumeric from "@/utils/is-numeric";
+import ReviewStatus from "@/components/solved-problem/ReviewStatus.vue";
 
 const problemsStore = useProblemsStore();
 const { isLoading, solvedProblems } = storeToRefs(problemsStore);
@@ -129,7 +130,7 @@ onMounted(async () => {
         </Column>
         <Column field="reviewDetails.status" header="Status" class="text-sm" style="width: 15%">
           <template #body="slot">
-            <span>{{ slot.data.reviewDetails?.status || "-" }}</span>
+            <ReviewStatus :status="slot.data.reviewDetails?.status" />
           </template>
         </Column>
         <Column field="solvedAt" header="Solved At" sortable style="width: 15%">

@@ -73,6 +73,7 @@ declare module 'vue' {
     ReadabilityCritique: typeof import('./src/components/problem-show/ai/ReadabilityCritique.vue')['default']
     ReviewDialog: typeof import('./src/components/dashboard/dialog/ReviewDialog.vue')['default']
     ReviewProblemCard: typeof import('./src/components/dashboard/ReviewProblemCard.vue')['default']
+    ReviewStatus: typeof import('./src/components/solved-problem/ReviewStatus.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollTop: typeof import('primevue/scrolltop')['default']
