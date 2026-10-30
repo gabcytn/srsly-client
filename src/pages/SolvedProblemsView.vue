@@ -78,7 +78,12 @@ onMounted(async () => {
           <div class="p-3 text-center">No records found.</div>
         </template>
         <template #header>
-          <h1 class="text-xl mb-5">Solved Problems</h1>
+          <div class="flex justify-between items-center">
+            <h1 class="text-xl mb-5">Solved Problems</h1>
+            <span class="text-(--p-form-field-placeholder-color) text-sm"
+              >{{ solvedProblems.totalElements }} solved</span
+            >
+          </div>
           <Form :resolver :initialValues @submit="submitProblemSearch" class="flex gap-2">
             <FormField name="searchInput" class="w-[70%]">
               <IconField class="w-full">
@@ -122,12 +127,11 @@ onMounted(async () => {
             <DifficultyTag :label="slot.data.problem.difficulty" :withoutBorder="true" />
           </template>
         </Column>
-        <Column
-          field="reviewDetails.status"
-          header="Status"
-          class="text-sm"
-          style="width: 15%"
-        ></Column>
+        <Column field="reviewDetails.status" header="Status" class="text-sm" style="width: 15%">
+          <template #body="slot">
+            <span>{{ slot.data.reviewDetails?.status || "-" }}</span>
+          </template>
+        </Column>
         <Column field="solvedAt" header="Solved At" sortable style="width: 15%">
           <template #body="slot">
             <span class="text-(--p-form-field-placeholder-color) text-sm">{{
@@ -143,8 +147,8 @@ onMounted(async () => {
           style="width: 15%"
         >
           <template #body="slot">
-            <span v-if="slot.data.reviewDetails">{{
-              getMonthAndDate(slot.data.reviewDetails.nextAttemptAt)
+            <span>{{
+              slot.data.reviewDetails ? getMonthAndDate(slot.data.reviewDetails.nextAttemptAt) : "-"
             }}</span>
           </template>
         </Column>
