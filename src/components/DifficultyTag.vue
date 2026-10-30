@@ -2,12 +2,13 @@
 import type { Difficulty } from "@/shared/types";
 import capitalizeWord from "@/utils/capitalize-word";
 
-defineProps<{ label: Difficulty }>();
+defineProps<{ label: Difficulty; withoutBorder?: boolean }>();
 </script>
 <template>
   <span
     class="text-xs font-bold py-0.75 px-2.25 rounded"
-    :class="`text-${label.toLowerCase()} bg-${label.toLowerCase()}`"
-    >{{ label === "MEDIUM" ? "Med." : capitalizeWord(label) }}</span
+    :class="[`text-${label.toLowerCase()}`, !withoutBorder && `bg-${label.toLowerCase()}`]"
   >
+    {{ label === "MEDIUM" ? "Med." : capitalizeWord(label) }}
+  </span>
 </template>

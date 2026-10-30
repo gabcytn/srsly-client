@@ -80,7 +80,7 @@ onMounted(async () => {
         <template #header>
           <h1 class="text-xl mb-5">Solved Problems</h1>
           <Form :resolver :initialValues @submit="submitProblemSearch" class="flex gap-2">
-            <FormField name="searchInput" class="w-[60%]">
+            <FormField name="searchInput" class="w-[70%]">
               <IconField class="w-full">
                 <InputIcon>
                   <i class="pi pi-search" />
@@ -92,7 +92,7 @@ onMounted(async () => {
                 />
               </IconField>
             </FormField>
-            <FormField name="difficulty" class="w-[40%]">
+            <FormField name="difficulty" class="w-[30%]">
               <Select
                 size="small"
                 :options="difficulties"
@@ -104,23 +104,42 @@ onMounted(async () => {
             </FormField>
           </Form>
         </template>
-        <Column field="problem.questionFrontendId" style="width: 5%"></Column>
-        <Column field="problem.title" header="Title" sortable style="width: 25%"></Column>
+        <Column
+          class="text-sm"
+          field="problem.questionFrontendId"
+          style="width: 5%; color: var(--p-form-field-placeholder-color)"
+        >
+        </Column>
+        <Column
+          field="problem.title"
+          header="Title"
+          sortable
+          class="text-sm"
+          style="width: 25%"
+        ></Column>
         <Column field="problem.difficulty" header="Difficulty" style="width: 10%">
           <template #body="slot">
-            <DifficultyTag :label="slot.data.problem.difficulty" />
+            <DifficultyTag :label="slot.data.problem.difficulty" :withoutBorder="true" />
           </template>
         </Column>
-        <Column field="reviewDetails.status" header="Status" style="width: 15%"></Column>
+        <Column
+          field="reviewDetails.status"
+          header="Status"
+          class="text-sm"
+          style="width: 15%"
+        ></Column>
         <Column field="solvedAt" header="Solved At" sortable style="width: 15%">
           <template #body="slot">
-            <span>{{ getMonthAndDate(slot.data.solvedAt) }}</span>
+            <span class="text-(--p-form-field-placeholder-color) text-sm">{{
+              getMonthAndDate(slot.data.solvedAt)
+            }}</span>
           </template>
         </Column>
         <Column
           field="reviewDetails.nextAttemptAt"
           sortable
           header="Next Review"
+          class="text-sm"
           style="width: 15%"
         >
           <template #body="slot">
@@ -137,12 +156,14 @@ onMounted(async () => {
               rounded
               class="mr-2"
               @click="router.push(`/problems/${slot.data.problem.questionFrontendId}`)"
+              size="small"
             />
             <a :href="slot.data.problem.url" target="_blank">
               <Button
                 icon="pi pi-external-link"
                 severity="info"
                 variant="outlined"
+                size="small"
                 rounded
                 class="mr-2"
                 link
