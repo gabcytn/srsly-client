@@ -7,10 +7,14 @@ export const useProblemsStore = defineStore("problems", () => {
   const isLoading = ref(false);
   const solvedProblems = ref<PaginatedSolvedProblem>();
 
-  async function getSolved(page: number = 0) {
+  async function getSolved(page: number = 0, difficulty: string = "all", title: string = "") {
     isLoading.value = false;
     try {
-      const params = new URLSearchParams({ page: String(page) });
+      const params = new URLSearchParams({
+        page: String(page),
+        difficulty,
+        title,
+      });
       const data = await ProblemService.findSolved(params);
       solvedProblems.value = data;
     } catch {

@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import SkeletonLoader from "@/components/problem-show/SkeletonLoader.vue";
 import AppLayout from "@/layouts/AppLayout.vue";
-import { FilterMatchMode } from "@primevue/core/api";
 import { useProblemsStore } from "@/stores/problems";
 import { storeToRefs } from "pinia";
-import { Column, DataTable, InputNumber } from "primevue";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { Column, DataTable, InputText, Select } from "primevue";
+import { computed, onMounted, ref, watch } from "vue";
 import router from "@/router";
 import DifficultyTag from "@/components/DifficultyTag.vue";
 import getMonthAndDate from "@/utils/get-month-and-date";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
+import isNumeric from "@/utils/is-numeric";
 
 const problemsStore = useProblemsStore();
 const { isLoading, solvedProblems } = storeToRefs(problemsStore);
@@ -19,34 +19,49 @@ const paginationPage = ref(0);
 const rows = computed(() => solvedProblems.value?.size);
 const totalRecords = computed(() => solvedProblems.value?.totalElements);
 
-async function init() {
-  await problemsStore.getSolved();
-}
-
-const filters = ref({
-  global: {
-    value: null,
-    matchMode: FilterMatchMode.CONTAINS,
-  },
-});
-
-onMounted(init);
-
 watch(paginationPage, async (newPage) => {
   const page = newPage / (rows.value ?? 1);
   await problemsStore.getSolved(page);
 });
 
+const difficulties = ref([
+  { name: "Any difficulty", value: "all" },
+  { name: "Easy", value: "easy" },
+  { name: "Medium", value: "medium" },
+  { name: "Hard", value: "hard" },
+]);
+
+const initialValues = ref({
+  searchInput: "",
+  difficulty: difficulties.value[0],
+});
+
 const resolver = zodResolver(
   z.object({
-    problemId: z.number(),
+    searchInput: z.string(),
+    difficulty: z.object(
+      { name: z.string(), value: z.string() },
+      { message: "Difficulty is required." },
+    ),
   }),
 );
 
 async function submitProblemSearch({ valid, values }: any) {
-  if (!valid) return;
-  router.push(`/problems/${values.problemId}`);
+  if (!valid) {
+    return;
+  }
+
+  if (isNumeric(values.searchInput)) {
+    router.push(`/problems/${values.searchInput}`);
+    return;
+  }
+
+  await problemsStore.getSolved(0, values.difficulty.value, values.searchInput);
 }
+
+onMounted(async () => {
+  await problemsStore.getSolved();
+});
 </script>
 
 <template>
@@ -58,34 +73,40 @@ async function submitProblemSearch({ valid, values }: any) {
         :rows="1"
         :total-records="4"
         table-style="min-width: 50rem"
-        v-model:filters="filters"
-        :global-filter-fields="['problem.title']"
       >
         <template #empty>
           <div class="p-3 text-center">No records found.</div>
         </template>
         <template #header>
-          <div class="flex justify-between">
-            <Form :resolver @submit="submitProblemSearch">
-              <FormField name="problemId">
-                <IconField name="problemId">
-                  <InputIcon>
-                    <i class="pi pi-search" />
-                  </InputIcon>
-                  <InputNumber placeholder="Go to problem (ID)" />
-                </IconField>
-              </FormField>
-            </Form>
-            <IconField>
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
-            </IconField>
-          </div>
+          <h1 class="text-xl mb-5">Solved Problems</h1>
+          <Form :resolver :initialValues @submit="submitProblemSearch" class="flex gap-2">
+            <FormField name="searchInput" class="w-[60%]">
+              <IconField class="w-full">
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText
+                  size="small"
+                  placeholder="Search by title or type the ID to open a problem"
+                  fluid
+                />
+              </IconField>
+            </FormField>
+            <FormField name="difficulty" class="w-[40%]">
+              <Select
+                size="small"
+                :options="difficulties"
+                optionLabel="name"
+                placeholder="Select a Difficulty"
+                fluid
+                class="w-full"
+              />
+            </FormField>
+          </Form>
         </template>
+        <Column field="problem.questionFrontendId" style="width: 5%"></Column>
         <Column field="problem.title" header="Title" sortable style="width: 25%"></Column>
-        <Column field="problem.difficulty" header="Difficulty" style="width: 15%">
+        <Column field="problem.difficulty" header="Difficulty" style="width: 10%">
           <template #body="slot">
             <DifficultyTag :label="slot.data.problem.difficulty" />
           </template>
@@ -108,7 +129,7 @@ async function submitProblemSearch({ valid, values }: any) {
             }}</span>
           </template>
         </Column>
-        <Column header="Action" style="width: 15%">
+        <Column style="width: 15%">
           <template #body="slot">
             <Button
               icon="pi pi-eye"
