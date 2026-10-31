@@ -21,14 +21,13 @@ const navItems: MenuItem[] = [
       router.push({ path: "/problems/solved" });
     },
   },
-  // {
-  //   label: "Insights",
-  //   icon: "pi pi-wave-pulse",
-  // },
-  // {
-  //   label: "Settings",
-  //   icon: "pi pi-cog",
-  // },
+  {
+    label: "Settings",
+    icon: "pi pi-cog",
+    command: () => {
+      router.push({ path: "/settings" });
+    },
+  },
   {
     label: "Toggle theme",
     icon: "pi pi-sun",

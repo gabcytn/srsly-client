@@ -180,3 +180,9 @@ export type ProblemContext = {
 };
 
 export const ProblemKey: InjectionKey<ProblemContext> = Symbol("ProblemContext");
+
+export interface UserSettingsInfo {
+  name: string;
+  email: string;
+  subscribedToMails: boolean;
+}

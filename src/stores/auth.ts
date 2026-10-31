@@ -117,5 +117,6 @@ export const useAuthStore = defineStore("auth", () => {
     openSignInModal,
     toggleSignInModal,
     isSignInModalOpen,
+    resetAccessToken,
   };
 });
