@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useReviewStore } from "@/stores/review";
 import normalizeErrorMessage from "@/utils/errors/normalize-error-message";
-import { AxiosError } from "axios";
-import { storeToRefs } from "pinia";
 import { useToast } from "primevue";
 import { ref, watch } from "vue";
 

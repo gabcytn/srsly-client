@@ -35,6 +35,12 @@ const router = createRouter({
       meta: { public: true },
     },
     {
+      path: "/settings",
+      name: "settings",
+      component: () => import("../pages/Settings.vue"),
+      meta: { public: false },
+    },
+    {
       path: "/:catchAll(.*)*",
       name: "notFound",
       component: () => import("../pages/NotFoundView.vue"),

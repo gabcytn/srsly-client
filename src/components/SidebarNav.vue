@@ -23,7 +23,7 @@ import Logo from "./Logo.vue";
 .p-menu-list {
   flex: 1;
 }
-.p-menu-item[aria-label="Logout"] {
+.p-menu-item[aria-label="Toggle theme"] {
   margin-top: auto;
 }
 </style>

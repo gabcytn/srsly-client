@@ -28,6 +28,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
     ComplexityCritique: typeof import('./src/components/problem-show/ai/ComplexityCritique.vue')['default']
+    ConfirmAccountDeletionDialog: typeof import('./src/components/settings/ConfirmAccountDeletionDialog.vue')['default']
     ConfirmDialog: typeof import('primevue/confirmdialog')['default']
     CorrectnessCritique: typeof import('./src/components/problem-show/ai/CorrectnessCritique.vue')['default']
     DashboardHeader: typeof import('./src/components/dashboard/DashboardHeader.vue')['default']
